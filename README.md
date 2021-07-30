@@ -3,11 +3,10 @@
 Live Chart is a class management tool which allows teachers to monitor and interact with 
 student online course work in real time.
 
-To dive into JavaScirpt Documentation, use the directory on the right.
+To dive into JavaScript Documentation, use the directory on the right.
 
 To access the Java documentation, click the link to the Java directory beneath "Home".
 
-### Documents Creation
 Documents were created using both java docs and jsdocs.
 
 Java Docs were generated using native JRE Java docs library, through the eclipse extension. 

@@ -16,9 +16,9 @@
         "monospaceLinks": true
     },
     "opts": {            
-        "destination": "./docs/JS Documentation",          
+        "destination": "./docs",          
         "recurse": true,
-        "tutorials": "./docs/JS Documentation/tutorials", 
+        "tutorials": "./docs/tutorials", 
         "readme": "./readme.md"             
     }
 }
