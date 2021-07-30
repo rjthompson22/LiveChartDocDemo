@@ -1,0 +1,1713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: seating_chart_with_names.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: seating_chart_with_names.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>$(function() {
+  //ScreenOrientation.lock('landscape')
+  
+  // let's make a master document with live chart vocabulary
+  // Luc paquette: sequence mining to map towards affects (supervised) instead of mining
+  // 				 sequences based on affect (unsupervised) does this sound correct?
+  
+  var alertDialog = new AlertDialog();
+  
+  var numberOfStudentsPerRow = 6;
+  var students = [];
+  var questions;
+  //$(".dropdown-menu").hide(0);
+  $("#footer-container").hide(0);
+  $(".seating-arrangement-root-container").hide(0);
+  $(".dialog-student").hide(0);
+
+  var teacherPreferences = new TeacherPreferences();
+  teacherPreferences.seatingArrangementXref = xref;
+  var seatingArrangement;
+  var maxTimeSpent = 0;
+  var maxTimeSpentString = '';
+  // var currentPlaybackTime; Replaced with Teacher Preferences Attr
+  var currentLiveTime;
+  // var fullscreenMode = false; Replaced with Teacher Preferences Attr
+  
+  var paused, playbackSpeed;
+  var $slider = $("#mainSlider");
+  var $timer = $("#sliderValue");
+  var $playBtn = $("#play");
+  var $pauseBtn = $("#pause");
+  var $reloadBtn = $(".reload-btn");
+  
+  var $fullScreenBtn = $('#fullscreen');
+  var $normalScreenBtn = $('#normalscreen');
+
+  teacherPreferences.fetchTeacherPreferences();
+  teacherPreferences.saveTeacherPreferences();
+  
+  
+  /**
+  * This is just minor bookkeeping to indicate whether the class is in live mode or in playback mode.
+  */
+  if (playbackFlag) {
+    $(".live-playback-indicator").removeClass("live-indicator").html("Playback: " + assignmentName);
+  } else {
+    $(".live-playback-indicator").removeClass("playback-indicator").html(" &lt;span>&amp;bull;&lt;/span> LIVE: " + assignmentName);
+  }
+  
+  function initializeSliderButtons() {
+    paused = false;
+    playbackSpeed = 1;
+    teacherPreferences.currentPlaybackTime = 0;
+    
+    $pauseBtn.show(0);
+    $playBtn.hide(0);
+    $reloadBtn.hide(0);
+    
+    $fullScreenBtn.show(0);
+    $normalScreenBtn.hide(0);
+  }
+  initializeSliderButtons();
+  
+  var $dialog_setting_close = $("#dialog-setting-close");
+  var $dialog_container = $(".dialog-container, .dialog-setting");
+  $("#dialog-setting-close, .dialog-setting-cancel").click(function() {
+    $dialog_container.hide(0);
+  });
+  
+  var $setting_icon = $(".setting-btn");
+  $setting_icon.click(function() {
+    pauseSlider();
+    $dialog_container.show(0);
+  });
+  
+  var $setting_start = $("#dialog-setting-start");
+  $setting_start.click(function() {
+    $dialog_container.hide(0);
+  });
+  
+  var studentReportDetailCoreJson;
+  
+  $("#dialog-setting-start").prop('disabled', true);
+
+  fetch('/LiveChart/getStudentReportDetail', {method: 'POST', body: xref})
+  .then(response => { return response.json(); })
+  .then(result => {
+    studentReportDetailCoreJson = result;
+        
+    // parse the qustions in the problem set
+    questions = new Questions();
+    questions.init(studentReportDetailCoreJson[0].problems, studentReportDetailCoreJson[0].problemPsakeys);
+    
+    // parse and combine the respective users and their userRepors
+    var users = studentReportDetailCoreJson[0].users;
+    var userReport = studentReportDetailCoreJson[0].userReport;
+    $("#dialog-setting-start").prop('disabled', false);
+    
+    for (var i = 0; i &lt; users.length; i++) {
+      var student = new Student();
+      student.init(users[i], userReport[i], questions.getTotalQuestions());
+      students.push(student);
+    }
+    
+    // check for pre-existing seating arrangement
+    seatingArrangement = new SeatingArrangement();
+    seatingArrangement.init($(".seating-arrangement-container"), students, testingSeatingArrangementCompletion, pauseSlider, setMainplayerInFocus);
+    
+    if (seatingArrangement == null) {
+      $(".loading-cover").hide(0);
+      $(".dialog-setting").show(0);
+    }
+
+    if (!playbackFlag)
+    ajaxTimeoutController = setTimeout(function() {
+      updateForLive();
+    }, 20000);
+  }, error => {
+    // Probably redirect to previous page with notification that it did not
+    // work or the type of error.
+  });
+  
+  //assistmentsgedu
+  var updateForLiveInterval;
+  var count = 0;
+  var ajaxTimeoutController;
+  
+  if(!playbackFlag) {
+    subscribeToStudentReportDetails((result) => {
+      // console.log(result); // TODO remove
+      
+      const studentReportDetailCoreJson = JSON.parse(result);
+      var userReport = studentReportDetailCoreJson[0].userReport;
+      var users = studentReportDetailCoreJson[0].users;
+      var usersXref = studentReportDetailCoreJson[0].users.map(x => x.userXref);
+      
+      for (var i = 0; i &lt; students.length; i++) {
+        let userIdx = usersXref.indexOf(students[i].getStudentXref());
+        students[i].updateUserReport(userReport[userIdx]);
+      }
+    });
+  }
+  
+  function updateForLive() {
+    if (count &lt; 180) {
+      count++;
+      if(playbackFlag) {
+        
+      } else {
+        requestStudentReportDetails();
+      }
+      ajaxTimeoutController = setTimeout(function() {
+        updateForLive();
+      }, 20000);
+    } else {
+      alertDialog.init("A1", "The Live feature is only designed to track for 60 minutes in a single session. If you wish to continue tracking the students then please refresh your page.");
+    }
+  }
+  
+  function rearrangeStudentsInAlphabeticalOrder() {
+    var new_students = [];
+    var $studentNames = $(".info-block-general .student-info .student-name-info");
+    // console.log("student names length : " + $studentNames.length);
+    
+    var studentNamesArray = students.map(student => student.getName());
+    
+    // console.log(studentNamesArray);
+    // console.log(studentNamesArray.sort());
+  }
+  
+  function rearrangeStudents() {
+    //rearrangeStudentsInAlphabeticalOrder()
+    var new_students = [];
+    var $studentNames = $(".info-block-general .student-info .student-name-info");
+    var $studentInfo = $(".info-block-general .student-info");
+    // console.log("student names length : " + $studentNames.length);
+    for (var i = 0; i &lt; $studentNames.length; i++) {
+      for (var j = 0; j &lt; students.length; j++) {
+        if (students[j].getName() == $($studentNames[i]).html().trim()) {
+          new_students.push(students[j]);
+          break;
+        }
+      }
+      // console.log(students[j].getName() + " : " + $($studentNames[i]).html().trim());
+    }
+    
+    if (new_students.length == students.length) {
+      students = new_students;
+      students.forEach(function(student, index) {
+        student.resetStudentAffectState();
+        
+        for (var i = 0; i &lt; $studentNames.length; i++) {
+          if (student.getName() == $($studentNames[i]).html().trim()) {
+            //attaching data to each student div.
+            $($studentInfo[i]).data("student_index", index);
+            break;
+          }
+        }
+      });
+      
+    } else {
+      // console.log(students);
+      // console.log(new_students);
+      alertDialog.init("A1", "Hi teacher! It appears the number of students in your class has changed we need you to create a new seating arrangemet for your class.");
+      $(".seating-arrangement-btn").trigger('click');
+      seatingArrangement.drawSeatingArrangementSelector();
+      //rearrangeStudents();
+    }
+    
+  }
+  
+  var alphabeticalSeatingArrangement = false;
+  // var viewPerProblem = false; Replaced by Teacher Preferences Attr
+  var $seatingArrangementToggle = $("#seating-arrangement-toggle");
+  var $viewPerProblemToggle = $("#view-per-problem-toggle");
+  var $colorBlindnessToggle = $("#color-blindness-toggle");
+  
+  // if the toggle is off that means the seating arrangement should be alphabetical
+  $seatingArrangementToggle.change(function() {
+    $viewPerProblemToggle.bootstrapToggle('on');
+    $(".info-block-general").removeClass("tutoring-problem-levels");
+    testingSeatingArrangementCompletion();
+  });
+  
+  $viewPerProblemToggle.change(function() {
+    $(".info-block-general").toggleClass("tutoring-problem-levels");
+    testingSeatingArrangementCompletion();
+    // tutoring-problem-levels
+  });
+  
+  //$viewPerProblemToggle.bootstrapToggle('off');
+  
+  $colorBlindnessToggle.change(function() {
+    $(".root-container").toggleClass("colorblind-green");
+  });
+  // TODO: need to change this eventually into something more reasonable
+  // the SeatingArrangements.js callback calls this function
+  function testingSeatingArrangementCompletion() {
+    alphabeticalSeatingArrangement = $seatingArrangementToggle.parent().hasClass("off");
+    viewPerProblem = !($viewPerProblemToggle.parent().hasClass("off"));
+    var seatingarrangementJson = (alphabeticalSeatingArrangement) ? seatingArrangement.getSeatingArranementJson(-1) : seatingArrangement.getSeatingArranementJson();
+    if (Object.keys(seatingarrangementJson).length > 0) {
+      clearInterval(sliderInterval);
+      if (!viewPerProblem) {
+        drawStudentsPerProblem(seatingArrangement.getSeatingArranementJson(-1));
+      } else {
+        drawStudents(seatingarrangementJson);
+        // drawStudentsPerProblem(seatingArrangementJson);
+      }
+      $(".loading-cover").hide(0);
+      $dialog_container.hide(0);
+    } else {
+      alertDialog.init("A1", "Something happened while trying to call the callback functions to draw the seatingArrangement this is a logic flaw and should have never happened");
+    }
+  }
+  
+  function drawStudents(seatingArrangementJson_0) {
+    
+    if (seatingArrangementJson_0.totalrows > 11) {
+      alertDialog.init("A1", "Hi teacher! Just a heads up. The LIVE-CHART system was designed" +
+      " with a class that has at most about 60 students within 12 rows and 12 columns." +
+      " We would encourage arranging your class in a similar " +
+      "arrangement to have the best user experience.");
+    }
+    
+    var $infoBlockGeneral = $(".info-block-general");
+    var studentRowHtml = "&lt;div class=\"student-row\" > &lt;/div>";
+    $infoBlockGeneral.html("&lt;span class=\"info-block-general-title \">Class: XYZ&lt;/span>");
+    $(".student-row").html("");
+    
+    var $infoBlockZones = $(".info-block-zones");
+    // disable-gold-zone
+    $infoBlockZones.html("&lt;div class='info-red-zone'>&lt;/div> &lt;div class='info-gold-zone expand-reveal'>&lt;/div>");
+    
+    var studentInfoPrefix = "&lt;div class=\"student-info \" > &lt;img class='good-job-badge' src='/LiveChart/resources/images/well-done.png'>" +
+    "&lt;div class=\"teacher-student-avatar-container\"> &lt;img class=\"student-img student-img-regular\" src=\"/LiveChart/resources/images/student-final.png\"/>" +
+    "&lt;img class=\"student-img student-img-gold\" src=\"/LiveChart/resources/images/student-final-gold.png\"/> " +
+    "&lt;img class=\"student-img student-img-red\" src=\"/LiveChart/resources/images/student-final-red.png\"/>" +
+    "&lt;p class=\"student-name-info-anonymous\">*******&lt;/p>&lt;p class=\"student-name-info\">";
+    var studentInfoPrefixEmptySlots = "&lt;div class=\"empty-space\" >";
+    var teacherInfoPrefix = "&lt;div class=\"teacher-space\" > &lt;div class=\"teacher-student-avatar-container\"> &lt;img class=\"teacher-img\" src=\"/LiveChart/resources/images/teacher-final.png\"/> &lt;p class=\"teacher-name-info\">";
+    
+    /**
+    Should we do last 5 questions instead so it can be more real-time: March's idea which I whole-heartedly concur with.
+    */
+    var studentInfoSuffix = "&lt;/p> &lt;/div> &lt;span class=\"custom-floating-icon\">&lt;/span>" +
+    "&lt;p class='student-info-description'>Last 5 problems:&lt;/p>" +
+    "&lt;p class='last-five-problems'>&lt;/p>" +
+    //"&lt;div class=\"progress\">" +
+    //"&lt;div class=\"progress-bar progress-bar-striped bg-success\" style=\"width:40%\"> Free Space &lt;/div>" +
+    //"&lt;div class=\"progress-bar progress-bar-striped bg-warning\" style=\"width:10%\"> Warning &lt;/div>" +
+    //"&lt;div class=\"progress-bar progress-bar-striped bg-danger\" style=\"width:20%\"> Danger &lt;/div>" +
+    //"&lt;div class=\"progress-bar progress-bar-striped progress-bar-animated\" role=\"progressbar\""+
+    //" aria-valuenow=\"75\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width: 75%\">&lt;/div>" +
+    //"&lt;/div>" +
+    //Assignment
+    "&lt;p class='absence-complete-indicator'>Absent!&lt;/p>" +
+    "&lt;p class='student-info-description'>Progress:&lt;span class=\"assignment-progress-indicator\">&amp;nbsp;&lt;/span>&lt;/p>" +
+    "&lt;div class=\"progress\">" +
+    "&lt;div class=\"current-assignment-progress progress-bar\" role=\"progressbar\"" +
+    " aria-valuenow=\"75\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width: 0%\">&lt;/div>" +
+    "&lt;/div>" +
+    "&lt;/div>";
+    var teacherInfoSuffix = "&lt;/p> &lt;/div> &lt;/div>";
+    var studentInfoSuffixEmptySlots = " &lt;/div>";
+    var user;
+    var $studentRow = $(".info-block-general .student-row");
+    var $studentRows;
+    
+    var seatingGridInfo;
+    for (var i = 0; i &lt; seatingArrangementJson_0.totalrows; i++) {
+      $infoBlockGeneral.append(studentRowHtml);
+      $studentRows = $(".info-block-general .student-row");
+      $studentRow = $($studentRows[$studentRows.length - 1]);
+      
+      seatingGridInfo = seatingArrangementJson_0.seatingGrid[i].row;
+      
+      for (var j = 0; j &lt; seatingArrangementJson_0.totalcolumns; j++) {
+        if (seatingGridInfo[j].hasOwnProperty('name')) {
+          switch (seatingGridInfo[j].name.trim().toUpperCase()) {
+            case "TEACHER DESK":
+            $studentRow.append(teacherInfoPrefix + seatingGridInfo[j].name + teacherInfoSuffix);
+            break;
+            default:
+            $studentRow.append(studentInfoPrefix + seatingGridInfo[j].name + studentInfoSuffix);
+            break;
+          }
+        } else {
+          $studentRow.append(studentInfoPrefixEmptySlots + "&amp;nbsp;" + studentInfoSuffixEmptySlots);
+        }
+      }
+    }
+    
+    $(".student-info").addClass('disabled');
+    $(".student-info, .empty-space, .teacher-space").css({
+      "width": (96 / seatingArrangementJson_0.totalcolumns) + "%"
+    });
+    
+    $infoBlockGeneral.append("&lt;div class=\"playback-live-ended\"> The session has ended!!&lt;/div>");
+    $(".info-red-zone").html(
+      "&lt;span class=\"info-red-zone-title \">Requires Attention!&lt;/span>&lt;div class=\"student-row\"> &lt;p class=\"student-info expand-reveal2 placeholder\"" +
+      " id=\"placeholder-red\" >Name of student requiring attention.&lt;/p> &lt;/div>"
+      );
+      
+      // disable-gold-zone
+      $(".info-gold-zone").html(
+        "&lt;span class=\"info-gold-zone-title  \">Students Doing Well [ &lt;span class='blue hide'>HIDE!&lt;/span> ]&lt;/span>&lt;div class=\"student-row\">" +
+        "&lt;p class=\"student-info expand-reveal2 placeholder\" id=\"placeholder-gold\" >Name of student doing well.&lt;/p>&lt;/div>"
+        );
+        
+        $infoGoldZoneTitle = $(".info-gold-zone-title");
+        
+        // $(".info-gold-zone > .student-row, .progress").hide(0);
+        $(".progress").hide(0);
+        $infoGoldZoneTitle.click(function() {
+          $(".info-gold-zone").toggleClass("disable-gold-zone");
+          $(".info-gold-zone > .student-row").toggle();
+          $(this).html(($(this).find('.show').length > 0) ?
+          "Students Doing Well [ &lt;span class='blue hide'>HIDE!&lt;/span> ]" :
+          "Students Doing Well [ &lt;span class='blue show'>SHOW!&lt;/span> ]");
+        });
+        
+        rearrangeStudents();
+        if (playbackFlag) {
+          // this is if it is in playback mode
+          maxTimeSpent = Math.max(...students.map(std => Math.round(std.getTimeSpent())));
+          maxTimeSpentString = getFormattedSeconds(maxTimeSpent);
+        } else {
+          // this is if it is in live mode
+          // This is here because the idea is or live version the time on the player time indicator is gonna appear as
+          // -20:21/00:00 LIVE if the first action in the class was made 20 minutes and 21 seconds ago
+          liveStartTime = Math.min(...students.map(std => std.getStartTime()).filter(x => x > 0));
+          currentLiveTime = Math.floor(new Date().getTime() / 1000) - 20;
+        }
+        loadSlider();
+        
+        if($(".info-block-zones").is(":hidden")){
+          $(".student-name-info").hide(0);
+        } else {
+          $(".student-name-info-anonymous").hide(0);
+        }
+        
+        // open up student info modal
+        /*
+        $(".student-info").click(function(e) {
+          if($(this).hasClass('disabled')) return false;
+          
+          pauseSlider();
+          var studentIndex = $(e.currentTarget).data('student_index')
+          var studentData = students[studentIndex];
+          var studentModal = new StudentInfoModal();
+          $(".dialog-container, .dialog-student").show(0);
+          studentModal.init(studentData, questions, teacherPreferences.currentPlaybackTime, $($playbtn[0]));
+          
+        });
+        */
+      }
+      
+      function drawStudentsPerProblem(seatingArrangementJson_0) {
+        if (seatingArrangementJson_0.totalrows > 11) {
+          alertDialog.init("A1", "Hi teacher! Just a heads up. The LIVE-CHART system was designed" +
+          " with a class that has at most about 60 students within 12 rows and 12 columns." +
+          " We would encourage arranging your class in a similar " +
+          "arrangement to have the best user experience.");
+        }
+        
+        var $infoBlockGeneral = $(".info-block-general").addClass("tutoring-problem-levels");
+        var studentRowHtml = "&lt;div class=\"student-row\" > &lt;/div>";
+        $infoBlockGeneral.html("&lt;span class=\"info-block-general-title \">Class: XYZ&lt;/span>");
+        // had to add this new div because the content was getting squished too tightly because of the larger number of
+        // questions in the problem set. The div now allows us to have the functionality to overlfow if needed
+        // NOTE: this is only required in the problem level analysis
+        $infoBlockGeneral.html("&lt;i class=\"fa fa-chevron-circle-left scroll-left\" aria-hidden=\"true\">&lt;/i>" +
+        "&lt;i class=\"fa fa-chevron-circle-right scroll-right\" aria-hidden=\"true\">&lt;/i>" +
+        "&lt;div class=\"tutoring-problem-level-analysis-container\">" +
+        "&lt;/div>");
+        
+        let leftScrollValue = 0;
+        var $problemLevelAnalysisContainer = $(".tutoring-problem-level-analysis-container");
+        
+        var $scrollLeft = $(".scroll-left");
+        var $scrollRight = $(".scroll-right");
+        
+        /*$scrollLeft.click(function() {
+          leftScrollValue -= scrollUpdateValue;
+          if (leftScrollValue &lt;= 0) {
+            $(this).hide(0);
+            leftScrollValue = 0;
+          }
+          $scrollRight.show(0);
+          //$problemLevelAnalysisContainer.scrollLeft(leftScrollValue);
+          $problemLevelAnalysisContainer.animate({scrollLeft: leftScrollValue}, 800);
+        });
+        
+        $scrollRight.click(function() {
+          leftScrollValue += scrollUpdateValue;
+          if ((leftScrollValue + $problemLevelAnalysisContainer.width()) > $problemLevelAnalysisContainer[0].scrollWidth) {
+            leftScrollValue = $problemLevelAnalysisContainer[0].scrollWidth - $problemLevelAnalysisContainer.width();
+            $(this).hide(0);
+          }
+          $scrollLeft.show(0);
+          //$problemLevelAnalysisContainer.scrollLeft(leftScrollValue);
+          $problemLevelAnalysisContainer.animate({scrollLeft: leftScrollValue}, 800);
+        });*/
+        
+        var isScrolling = false;
+        $scrollLeft.mousedown(function() {
+          isScrolling = true;
+          startScrolling(false);
+        }).mouseup(function() {
+          isScrolling = false;
+        });
+        
+        $scrollRight.mousedown(function() {
+          isScrolling = true;
+          startScrolling(true);
+        }).mouseup(function() {
+          isScrolling = false;
+        });
+        
+        function startScrolling(goRight) {
+          if (isScrolling) {
+            var scrollComplete = false;
+            if (goRight) {
+              leftScrollValue += scrollUpdateValue;
+              if ((leftScrollValue + $problemLevelAnalysisContainer.width()) > $problemLevelAnalysisContainer[0].scrollWidth) {
+                leftScrollValue = $problemLevelAnalysisContainer[0].scrollWidth - $problemLevelAnalysisContainer.width();
+                $scrollRight.hide(0);
+                scrollComplete = true;
+              }
+              $scrollLeft.show(0);
+            } else {
+              leftScrollValue -= scrollUpdateValue;
+              if (leftScrollValue &lt;= 0) {
+                $scrollLeft.hide(0);
+                leftScrollValue = 0;
+                scrollComplete = true;
+              }
+              $scrollRight.show(0);
+            }
+            
+            $problemLevelAnalysisContainer.animate({
+              scrollLeft: leftScrollValue
+            }, 400, "linear", function() {
+              if (!scrollComplete)
+              startScrolling(goRight);
+            });
+          }
+        }
+        
+        
+        
+        $(".student-row").html("");
+        
+        var $infoBlockZones = $(".info-block-zones");
+        // disable-gold-zone
+        $infoBlockZones.html("&lt;div class='info-red-zone'>&lt;/div> &lt;div class='info-gold-zone expand-reveal'>&lt;/div>");
+        
+        var studentInfoPrefix = "&lt;div class=\"student-info \" data-is-absentee-completed= 'false' data-active-problem='0'> &lt;img class='good-job-badge' src='/LiveChart/resources/images/well-done.png'>" +
+        "&lt;div class=\"teacher-student-avatar-container\"> &lt;img class=\"student-img student-img-regular\" src=\"/LiveChart/resources/images/student-final.png\"/>" +
+        "&lt;img class=\"student-img student-img-gold\" src=\"/LiveChart/resources/images/student-final-gold.png\"/> " +
+        "&lt;img class=\"student-img student-img-red\" src=\"/LiveChart/resources/images/student-final-red.png\"/>" +
+        "&lt;p class=\"student-name-info-anonymous\">*******&lt;/p>&lt;p class=\"student-name-info\">";
+        var studentInfoPrefixEmptySlots = "&lt;div class=\"empty-space\" >";
+        var teacherInfoPrefix = "&lt;div class=\"teacher-space\" > &lt;div class=\"teacher-student-avatar-container\"> &lt;img class=\"teacher-img\" src=\"/LiveChart/resources/images/teacher-final.png\"/> &lt;p class=\"teacher-name-info\">";
+        
+        /**
+        Should we do last 5 questions instead so it can be more contextually relevant: March's idea which I whole-heartedly concur with.
+        */
+        var studentInfoSuffix = "&lt;/p> &lt;/div> &lt;span class=\"custom-floating-icon\">&lt;/span>" +
+        "&lt;p class='student-info-description'>Last 5 problems:&lt;/p>" +
+        "&lt;p class='last-five-problems'>&lt;/p>" +
+        //Assignment
+        "&lt;p class='absence-complete-indicator'>Absent!&lt;/p>" +
+        "&lt;p class='student-info-description'>Progress:&lt;span class=\"assignment-progress-indicator\">&amp;nbsp;&lt;/span>&lt;/p>" +
+        // "&lt;div class=\"progress\">" +
+        // "&lt;div class=\"current-assignment-progress progress-bar\" role=\"progressbar\"" +
+        // " aria-valuenow=\"75\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width: 100%\">&lt;/div>" +
+        // "&lt;/div>" +
+        "&lt;/div>";
+        var teacherInfoSuffix = "&lt;/p> &lt;/div> &lt;/div>";
+        var studentInfoSuffixEmptySlots = " &lt;/div>";
+        var user;
+        var $studentRow = $(".info-block-general .student-row");
+        var $studentRows;
+        
+        var seatingGridInfo;
+        var questionText = "Problem";
+        var questionLabels = questions.getQuestionLabels();
+        // questionText = (questions.getTotalQuestions() > 4) ? "P" : questionText;
+        
+        for (var i = 0; i &lt; questions.getTotalQuestions(); i++) {
+          $problemLevelAnalysisContainer.append(studentRowHtml);
+          $studentRows = $(".info-block-general .student-row");
+          //$studentRow = $($studentRows[$studentRows.length - 1]).addClass("question" + i + ((i > 0) ? " empty-question" : ""));
+          $studentRow = $($studentRows[$studentRows.length - 1]).addClass("question" + i);
+          $studentRow.html("&lt;button type='button' class='btn btn-outline-primary question-inidcator' data-question-idx='" + i +
+          "'>" + (i + 1) + ") " + questionLabels[i].replace(/Problem /g, questionText) + "&lt;/button>");
+        }
+        
+        // adding two more columns for completed and absentees
+        var additionalColumns = ["Absentees", "Incomplete", "Completions"]
+        if (!playbackFlag) {
+          additionalColumns = ["Not-Started", "Completions"]
+        }
+        for (var i = 0; i &lt; additionalColumns.length; i++) {
+          $problemLevelAnalysisContainer.append(studentRowHtml);
+          $studentRows = $(".info-block-general .student-row");
+          $studentRow = $($studentRows[$studentRows.length - 1]).addClass([additionalColumns[i].toLowerCase(), 'nonquestion']);
+          $studentRow.html("&lt;p class='label-inidcator'>" + additionalColumns[i] + "&lt;/p>");
+        }
+        
+        var seatingGridInfo;
+        for (var i = 0; i &lt; seatingArrangementJson_0.totalrows; i++) {
+          $studentRow = $($studentRows[0]);
+          
+          seatingGridInfo = seatingArrangementJson_0.seatingGrid[i].row;
+          
+          for (var j = 0; j &lt; seatingArrangementJson_0.totalcolumns; j++) {
+            if (seatingGridInfo[j].hasOwnProperty('name')) {
+              switch (seatingGridInfo[j].name.trim().toUpperCase()) {
+                case "TEACHER DESK":
+                // do nothing if teacher desk is the key word
+                break;
+                default:
+                // otherwise add the student name to the problem 1 stack
+                $studentRow.append(studentInfoPrefix + seatingGridInfo[j].name + studentInfoSuffix);
+                break;
+              }
+            }
+          }
+        }
+        
+        $(".student-info").each(function(index) {
+          $(this).data("students-index", index);
+        });
+        
+        //$(".student-row").css({
+        //  "width": (94 / questions.getTotalQuestions())+"%"
+        //});
+        
+        $(".student-info").addClass('disabled');
+        
+        if ($($(".student-info")[0]).outerWidth() &lt; 400) {
+          $(".student-info, .empty-space, .teacher-space").css({
+            "width": "96%"
+          });
+        } else {
+          $(".student-info, .empty-space, .teacher-space").css({
+            "width": "38%"
+          });
+        }
+        
+        $(".info-red-zone").html(
+          "&lt;span class=\"info-red-zone-title \">Requires Attention!&lt;/span>&lt;div class=\"student-row\"> &lt;p class=\"student-info expand-reveal2 placeholder\"" +
+          " id=\"placeholder-red\" >Name of student requiring attention.&lt;/p> &lt;/div>"
+          );
+          
+          // disable-gold-zone
+          $(".info-gold-zone").html(
+            "&lt;span class=\"info-gold-zone-title  \">Students Doing Well [ &lt;span class='blue hide'>HIDE!&lt;/span> ]&lt;/span>&lt;div class=\"student-row\">" +
+            "&lt;p class=\"student-info expand-reveal2 placeholder\" id=\"placeholder-gold\" >Name of student doing well.&lt;/p>&lt;/div>"
+            );
+            
+            $infoGoldZoneTitle = $(".info-gold-zone-title");
+            
+            // $(".info-gold-zone > .student-row, .progress").hide(0);
+            $(".progress").hide(0);
+            $infoGoldZoneTitle.click(function() {
+              $(".info-gold-zone").toggleClass("disable-gold-zone");
+              $(".info-gold-zone > .student-row").toggle();
+              $(this).html(($(this).find('.show').length > 0) ?
+              "Students Doing Well [ &lt;span class='blue hide'>HIDE!&lt;/span> ]" :
+              "Students Doing Well [ &lt;span class='blue show'>SHOW!&lt;/span> ]");
+            });
+            
+            rearrangeStudents();
+            
+            $(".question-inidcator").click(function() {
+              alertDialog.init("QuestionDetail", questions.getQuestions()[$(this).data("question-idx")]);
+            });
+            
+            if (playbackFlag) {
+              // this is if it is in playback mode
+              maxTimeSpent = Math.max(...students.map(std => Math.round(std.getTimeSpent())));
+              maxTimeSpentString = getFormattedSeconds(maxTimeSpent);
+            } else {
+              // this is if it is in live mode
+              // This is here because the idea is or live version the time on the player time indicator is gonna appear as
+              // -20:21/00:00 LIVE if the first action in the class was made 20 minutes and 21 seconds ago
+              liveStartTime = Math.min(...students.map(std => std.getStartTime()).filter(x => x > 0));
+              currentLiveTime = Math.floor(new Date().getTime() / 1000) - 20;
+            }
+            loadSlider();
+            // This ensures that the side scroll jumps by a single question row on each click.
+            var scrollUpdateValue = $($(".tutoring-problem-level-analysis-container .student-row")[0]).outerWidth();
+            
+            $(".tutoring-problem-level-analysis-container .student-row").on("DOMSubtreeModified", function() {
+              var $this = $(this);
+              var $studentInfos = $this.find(".student-info");
+              if ($studentInfos.length > 0) {
+                var studentInfoCount = Math.ceil($studentInfos.length / 2) + 2;
+                var studentInfoHeight = $($studentInfos[0]).outerHeight();
+                ratio = Math.round((studentInfoCount * studentInfoHeight) / $this.parent().outerHeight() * 100) / 100;
+                if (ratio &lt; 1) {
+                  $this.removeClass("columns3 columns4 columns5 columns6 columns7");
+                } else if (ratio >= 1 &amp;&amp; ratio &lt; 1.5) {
+                  $this.removeClass("columns4 columns5 columns6 columns7").addClass("columns3");
+                } else if (ratio >= 1.5 &amp;&amp; ratio &lt; 2) {
+                  $this.removeClass("columns3 columns5 columns6 columns7").addClass("columns4");
+                } else if (ratio >= 2 &amp;&amp; ratio &lt; 2.5) {
+                  $this.removeClass("columns3 columns4 columns6 columns7").addClass("columns5");
+                } else if (ratio >= 2.5 &amp;&amp; ratio &lt; 3) {
+                  $this.removeClass("columns3 columns4 columns5 columns7").addClass("columns6");
+                } else {
+                  $this.removeClass("columns3 columns4 columns5 columns6").addClass("columns7");
+                }
+              }
+            });
+            
+            if($(".info-block-zones").is(":hidden")){
+              $(".student-name-info").hide(0);
+            } else {
+              $(".student-name-info-anonymous").hide(0);
+            }
+            // setUpMutationObserver();
+          }
+          
+          function setUpMutationObserver() {
+            var $targetStudentRows = $(".tutoring-problem-level-analysis-container .student-row");
+            var MutationObserver = window.MutationObserver || window.WebkitMutationObserver;
+            var myObserver = new MutationObserver(mutationHandler);
+            var obsConfig = {
+              childList: true,
+              attributes: true,
+              subtree: true
+            };
+            
+            //--- Add a target node to the observer. Can only add one node at a time.
+            $targetStudentRows.each(function() {
+              myObserver.observe(this, obsConfig);
+            });
+            
+            function mutationHandler(mutationRecords) {
+              console.info("mutationHandler:");
+              
+              mutationRecords.forEach(function(mutation) {
+                console.log(mutation.type);
+                
+                if (typeof mutation.removedNodes == "object") {
+                  var jq = $(mutation.removedNodes);
+                  console.log(jq);
+                  console.log(jq.is("span.myclass2"));
+                  console.log(jq.find("span"));
+                }
+              });
+            }
+          }
+          
+          
+          $(window).on('beforeunload', function() {
+            clearInterval([sliderInterval]);
+          });
+          
+          var sliderInterval;
+          
+          function loadSlider() {
+            initializeSliderButtons();
+            
+            if (playbackFlag) {
+              $slider.attr('max', maxTimeSpent);
+              $slider.val(0);
+              $timer.html('00:00 / ' + maxTimeSpentString);
+            } else {
+              $slider.attr('min', liveStartTime);
+              $slider.attr('max', currentLiveTime);
+              $slider.val(currentLiveTime);
+              $timer.html("-00:00 ");
+              $(".absence-complete-indicator").html("Not Started!");
+              initiateLiveAction(currentLiveTime);
+            }
+            startSlider();
+          }
+          
+          
+          /**
+          * Can we rewrite this because this is functionally correct but it doesn't feel correct
+          * because I keep finding bugs in it.
+          * Let us use the jquery UI slider instead. The code is more standardized and easier to
+          * understand and breakdown.
+          *
+          * -Ashish
+          */
+          var liveStartTime = 0;
+          
+          function initiateLiveAction(currentLiveTime) {
+            // console.log("teacherPreferences.currentPlaybackTime : ", teacherPreferences.currentPlaybackTime);
+            // console.log("maxTimeSpent : ", maxTimeSpent);
+            // console.log("LIVE controller code goes in here!!");
+            console.log("The session started certain while ago: ", getFormattedSeconds(Math.floor(currentLiveTime)));
+            
+            // while (teacherPreferences.currentPlaybackTime &lt; (maxTimeSpent - 200)) {
+            //   startActionLIVE(teacherPreferences.currentPlaybackTime);
+            //   $slider.val(teacherPreferences.currentPlaybackTime);
+            //   $timer.html(getFormattedSeconds(teacherPreferences.currentPlaybackTime) + ' / ' + maxTimeSpentString);
+            //   teacherPreferences.currentPlaybackTime++;
+            // }
+          }
+          
+          var setMainplayerInFocus = function(bool) {
+            mainplayerInFocus = bool;
+          }
+          
+          function startSlider() {
+            if (sliderInterval)
+            clearInterval(sliderInterval);
+            
+            if (playbackFlag) {
+              sliderInterval = setInterval(function() {
+                if (!paused) {
+                  $slider[0].stepUp();
+                  if (!viewPerProblem) {
+                    startActionPlaybackProblemLevel(teacherPreferences.currentPlaybackTime);
+                  } else {
+                    startActionPlayback(teacherPreferences.currentPlaybackTime);
+                  }
+                  $timer.html(getFormattedSeconds(teacherPreferences.currentPlaybackTime) + ' / ' + maxTimeSpentString);
+                  teacherPreferences.currentPlaybackTime += 1;
+                }
+                if (parseInt($slider.val()) == maxTimeSpent || paused) {
+                  if (!viewPerProblem) {
+                    startActionPlaybackProblemLevel(teacherPreferences.currentPlaybackTime);
+                  } else {
+                    startActionPlayback(teacherPreferences.currentPlaybackTime);
+                  }
+                  clearInterval(sliderInterval);
+                  $slider.val(teacherPreferences.currentPlaybackTime);
+                  $timer.html(getFormattedSeconds(teacherPreferences.currentPlaybackTime) + ' / ' + maxTimeSpentString);
+                  if (teacherPreferences.currentPlaybackTime == maxTimeSpent) {
+                    $reloadBtn.show(0);
+                    $playBtn.hide(0);
+                    $pauseBtn.hide(0);
+                  }
+                }
+              }, (1000 / playbackSpeed));
+            } else {
+              sliderInterval = setInterval(function() {
+                $slider.attr('max', parseInt($slider.attr('max')) + 1);
+                if (!paused) {
+                  $slider[0].stepUp();
+                  if (!viewPerProblem) {
+                    startActionPlaybackProblemLevelLIVE(currentLiveTime);
+                  } else {
+                    startActionLIVE(currentLiveTime);
+                  }
+                  // this needs to be changes as it increases with time if the live version is paused
+                  $timer.html("-" + getFormattedSeconds($slider.attr('max') - $slider.val()));
+                  currentLiveTime += 1;
+                }
+                if (paused) {
+                  $timer.html("-" + getFormattedSeconds($slider.attr('max') - $slider.val()));
+                  $reloadBtn.hide(0);
+                  $playBtn.show(0);
+                  $pauseBtn.hide(0);
+                }
+              }, (1000));
+            }
+            
+            
+          }
+          
+          $slider.on('input', function() {
+            $(".disabled-complete").removeClass("disabled-complete");
+            $(".info-block-zone .student-info").remove();
+            pauseSlider();
+            
+            if (playbackFlag) {
+              teacherPreferences.currentPlaybackTime = parseInt($slider.val());
+              $timer.html(getFormattedSeconds(teacherPreferences.currentPlaybackTime) + ' / ' + maxTimeSpentString);
+              if (!viewPerProblem) {
+                var $studentInfo = $(".tutoring-problem-level-analysis-container .student-info").detach();
+                $studentInfo.removeClass(["disabled-complete", "disabled-complete-probelm-analysis"]).data("is-absentee-completed", false).data("active-problem", 0).appendTo(".question0");
+                startActionPlaybackProblemLevel(teacherPreferences.currentPlaybackTime);
+              } else {
+                startActionPlayback(teacherPreferences.currentPlaybackTime);
+              }
+              if (teacherPreferences.currentPlaybackTime >= maxTimeSpent) {
+                teacherPreferences.currentPlaybackTime = maxTimeSpent;
+                $playBtn.hide(0);
+                $pauseBtn.hide(0);
+                $reloadBtn.show(0);
+              }
+            } else {
+              // This is the LIVE portion so there is no point in showing
+              // reload buttons and manipulating the play pause buttons
+              currentLiveTime = parseInt($slider.val());
+              $timer.html("-" + getFormattedSeconds($slider.attr('max') - $slider.val()));
+              $(".absence-complete-indicator").html("Not Started!");
+              if (!viewPerProblem) {
+                var $studentInfo = $(".tutoring-problem-level-analysis-container .student-info").detach();
+                $studentInfo.removeClass(["disabled-complete", "disabled-complete-probelm-analysis"]).data("is-absentee-completed", false).data("active-problem", "0").appendTo(".question0");
+                startActionPlaybackProblemLevelLIVE(currentLiveTime);
+              } else {
+                startActionLIVE(currentLiveTime);
+              }
+            }
+            setTimeout(function() {
+              pauseSlider()
+            }, 1000);
+          });
+          
+          
+          function startActionPlayback(currentPlaybackTime) {
+            var $studentInfos = $(".info-block-general .student-info");
+            var $infoRedZone = $(".info-red-zone");
+            var $infoGoldZone = $(".info-gold-zone");
+            var $infoBlockZones = $(".info-block-zones");
+            var $placeholderRed = $("#placeholder-red");
+            var $placeholderGold = $("#placeholder-gold");
+            
+            var affectiveStateFlags;
+            var lastFiveCorrectness;
+            var $lastFiveProblems;
+            var $studentInfo;
+            var studentNameID;
+            var $assignmentProgressIndicator;
+            
+            for (var i = 0; i &lt; $studentInfos.length; i++) {
+              $studentInfo = $($studentInfos[i]);
+              studentNameID = students[i].getName().replace(/\s+/g, '').replace(/[^\w\s]/gi, '');
+              if (currentPlaybackTime &lt; students[i].getTimeSpent()) {
+                // clear everything before ploting
+                // $($studentInfo[i]).removeClass("disabled");
+                $studentInfo.find(".absence-complete-indicator").hide(0);
+                
+                $lastFiveProblems = $studentInfo.find(".last-five-problems");
+                
+                affectiveStateFlags = students[i].getStudentAffectState(currentPlaybackTime);
+                
+                lastFiveCorrectness = students[i].getLastFiveProblemCorrectness2(affectiveStateFlags.activeProblemIndex);
+                if(lastFiveCorrectness) {
+                  $lastFiveProblems.html(lastFiveCorrectness);
+                }
+                
+                /*if (lastFiveCorrectness &amp;&amp; affectiveStateFlags.activeProblemIndex != null) {
+                  $lastFiveProblems.html('');
+                  lastFiveCorrectness.forEach(correct => {
+                    if (correct) {
+                      $lastFiveProblems.append("&lt;span class='check' > &amp;check;&lt;/span>");
+                    } else {
+                      $lastFiveProblems.append("&lt;span class='cross' > &amp;cross; &lt;/span>");
+                    }
+                  });
+                }*/
+                if (affectiveStateFlags.activeProblemIndex != null)
+                $studentInfo.find(".assignment-progress-indicator").html("&amp;nbsp;" + (affectiveStateFlags.activeProblemIndex + 1) + "/" + questions.getTotalQuestions());
+                
+                /*if (affectiveStateFlags.activeProblemIndex == (questions.getTotalQuestions() - 1)) {
+                  $studentInfo.find(".absence-complete-indicator").html("Completed!").hide(0);
+                } else*/
+                if (!students[i].getAssignmentCompletedFlag() &amp;&amp; affectiveStateFlags.activeProblemIndex &lt; (questions.getTotalQuestions() - 1)) {
+                  $studentInfo.find(".absence-complete-indicator").html("Incomplete!").hide(0);
+                }
+                
+                if (affectiveStateFlags) {
+                  //clear everything before ploting
+                  $studentInfo.removeClass("disabled");
+                  $studentInfo.find(".progress").show(0);
+                  $studentInfo.find(".current-assignment-progress").attr('aria-valuenow', affectiveStateFlags.progressPercentage)
+                  .css({
+                    'width': affectiveStateFlags.progressPercentage + '%'
+                  });
+                  if (affectiveStateFlags.redZone &amp;&amp; !($studentInfo.hasClass("red-marked"))) {
+                    
+                    $studentInfo.addClass("red-marked");
+                    if ($infoRedZone.is(":hidden")) {
+                      $infoRedZone.show(0); //show the view if it is hidden
+                    }
+                    if (!$placeholderRed.is(":hidden")) {
+                      $placeholderRed.hide(0);
+                    }
+                    $infoRedZone.find(".student-row").append("&lt;p class=\"student-info expand-reveal2\" id=\"" + studentNameID + "_red\" " +
+                    "data-activeProblem=\"" + affectiveStateFlags.activeProblemIndex + "\" data-student_index=\"" + i + "\">" +
+                    students[i].getName() + "&lt;/p>");
+                    $("#" + studentNameID + "_red").click(function() {});
+                  } else if (!affectiveStateFlags.redZone) {
+                    if ($("#" + studentNameID + "_red").data("activeProblem") != affectiveStateFlags.activeProblemIndex) {
+                      $studentInfo.removeClass("red-marked");
+                      $("#" + studentNameID + "_red").remove();
+                    }
+                  }
+                  
+                  if (affectiveStateFlags.goldZone &amp;&amp; !($studentInfo.hasClass("gold-marked"))) {
+                    $studentInfo.addClass("gold-marked ");
+                    $studentInfo.find(".custom-floating-icon").show(0);
+                    if ($infoGoldZone.is(":hidden")) {
+                      $infoGoldZone.show(0); //show the view if it is hidden
+                    }
+                    if (!$placeholderGold.is(":hidden")) {
+                      $placeholderGold.hide(0);
+                    }
+                    $infoGoldZone.find(".student-row").append("&lt;p class=\"student-info expand-reveal2\" id=\"" + studentNameID + "_gold\" " +
+                    "data-activeProblem=\"" + affectiveStateFlags.activeProblemIndex + "\" data-student_index=\"" + i + "\">" +
+                    students[i].getName() + "&lt;/p>");
+                    $("#" + studentNameID + "_gold").click(function() {});
+                  } else if (!affectiveStateFlags.goldZone) {
+                    if ($("#" + studentNameID + "_gold").data("activeProblem") != affectiveStateFlags.activeProblemIndex) {
+                      $studentInfo.removeClass("gold-marked");
+                      $("#" + studentNameID + "_gold").remove();
+                    }
+                  }
+                }
+              } else {
+                if (students[i].getAssignmentCompletedFlag()) {
+                  $studentInfo.find(".absence-complete-indicator").html("Completed!");
+                }
+                
+                switch ($studentInfo.find(".absence-complete-indicator").html()) {
+                  case "Completed!":
+                  $studentInfo.removeClass("red-marked gold-marked");
+                  $studentInfo.removeClass("disabled");
+                  $studentInfo.find(".absence-complete-indicator").addClass("complete-indicator");
+                  break;
+                  case "Incomplete!":
+                  $studentInfo.removeClass("red-marked gold-marked");
+                  $studentInfo.removeClass("disabled");
+                  $studentInfo.find(".absence-complete-indicator").addClass("incomplete-indicator");
+                  break;
+                  case "Absent!":
+                  $studentInfo.addClass("disabled");
+                  break;
+                  default:
+                  break;
+                }
+                
+                $studentInfo.find(".absence-complete-indicator").show(0);
+                if (!$studentInfo.hasClass('disabled'))
+                $studentInfo.addClass("disabled-complete");
+                
+                $("#" + studentNameID + "_red, #" + studentNameID + "_gold").remove();
+                
+                if ($placeholderGold.is(":hidden") &amp;&amp; $infoGoldZone.find(".student-row").find(".student-info").length == 1) {
+                  $placeholderGold.show(0);
+                }
+                if ($placeholderRed.is(":hidden") &amp;&amp; $infoRedZone.find(".student-row").find(".student-info").length == 1) {
+                  $placeholderRed.show(0);
+                }
+              }
+            }
+          }
+          
+          function startActionPlaybackProblemLevel(currentPlaybackTime) {
+            var $studentInfos = $(".info-block-general .student-info");
+            var $infoRedZone = $(".info-red-zone");
+            var $infoGoldZone = $(".info-gold-zone");
+            var $infoBlockZones = $(".info-block-zones");
+            var $placeholderRed = $("#placeholder-red");
+            var $placeholderGold = $("#placeholder-gold");
+            
+            var affectiveStateFlags;
+            var lastFiveCorrectness;
+            var $lastFiveProblems;
+            var $studentInfo;
+            var studentNameID;
+            var $assignmentProgressIndicator;
+            var studentNameIDs = students.map(std => std.getName());
+            var index = 0;
+            var $detachedObj = null;
+            var $parentStudentRow;
+            for (var i = 0; i &lt; $studentInfos.length; i++) {
+              $studentInfo = $($studentInfos[i]);
+              index = studentNameIDs.indexOf($studentInfo.find(".student-name-info").html().trim());
+              
+              studentNameID = students[index].getName().replace(/\s+/g, '').replace(/[^\w\s]/gi, '');
+              if (currentPlaybackTime &lt; students[index].getTimeSpent()) {
+                // clear everything before ploting
+                // $($studentInfo[index]).removeClass("disabled");
+                $studentInfo.removeClass(["disabled-complete", "disabled-complete-probelm-analysis"]).data("is-absentee-completed", false);
+                $studentInfo.find(".absence-complete-indicator").hide(0);
+                
+                affectiveStateFlags = students[index].getStudentAffectState(currentPlaybackTime);
+                
+                $lastFiveProblems = $studentInfo.find(".last-five-problems");
+                if ($studentInfo.data("active-problem") != (affectiveStateFlags.activeProblemIndex + 1) &amp;&amp; affectiveStateFlags.activeProblemIndex >= 0 &amp;&amp; (affectiveStateFlags.activeProblemIndex + 1) &lt; questions.getTotalQuestions()) {
+                  $parentStudentRow = $studentInfo.parent();
+                  $detachedObj = $studentInfo.detach();
+                  //if ($parentStudentRow.find(".student-info").length == 0) {
+                  //  $parentStudentRow.addClass("empty-question");
+                  //}
+                  $detachedObj.appendTo(".question" + (affectiveStateFlags.activeProblemIndex + 1));
+                  $(".question" + (affectiveStateFlags.activeProblemIndex + 1)); //.removeClass("empty-question");
+                  $studentInfo.data("active-problem", (affectiveStateFlags.activeProblemIndex + 1));
+                } else if ($studentInfo.data("active-problem") != (affectiveStateFlags.activeProblemIndex + 1) &amp;&amp; affectiveStateFlags.activeProblemIndex >= 0 &amp;&amp; (affectiveStateFlags.activeProblemIndex + 1) == questions.getTotalQuestions()) {
+                  // this code only comes into play when the user jumps in the time bar
+                  $parentStudentRow = $studentInfo.parent();
+                  $detachedObj = $studentInfo.detach();
+                  $detachedObj.appendTo(".question" + (affectiveStateFlags.activeProblemIndex));
+                  $(".question" + (affectiveStateFlags.activeProblemIndex)); //.removeClass("empty-question");
+                  $studentInfo.data("active-problem", (affectiveStateFlags.activeProblemIndex));
+                }
+                
+                lastFiveCorrectness = students[index].getLastFiveProblemCorrectness2(affectiveStateFlags.activeProblemIndex);
+                if (lastFiveCorrectness) {
+                  $lastFiveProblems.html(lastFiveCorrectness);
+                  
+                  if ((affectiveStateFlags.activeProblemIndex + 1) &lt; questions.getTotalQuestions())
+                  $lastFiveProblems.append("&lt;i class=\"fa fa-lightbulb-o thinking-flash\" aria-hidden=\"true\">&lt;/i>");
+                }
+                
+                /*lastFiveCorrectness = students[index].getLastFiveProblemCorrectness(affectiveStateFlags.activeProblemIndex);
+                if (lastFiveCorrectness &amp;&amp; affectiveStateFlags.activeProblemIndex != null) {
+                  $lastFiveProblems.html('');
+                  lastFiveCorrectness.forEach(correct => {
+                    if (correct) {
+                      $lastFiveProblems.append("&lt;span class='check' > &amp;check;&lt;/span>");
+                    } else {
+                      $lastFiveProblems.append("&lt;span class='cross' > &amp;cross; &lt;/span>");
+                    }
+                  });
+                  if ((affectiveStateFlags.activeProblemIndex + 1) &lt; questions.getTotalQuestions())
+                  $lastFiveProblems.append("&lt;i class=\"fa fa-lightbulb-o thinking-flash\" aria-hidden=\"true\">&lt;/i>");
+                }*/
+                
+                if (affectiveStateFlags.activeProblemIndex != null)
+                $studentInfo.find(".assignment-progress-indicator").html("&amp;nbsp;" + (affectiveStateFlags.activeProblemIndex + 1) + "/" + questions.getTotalQuestions());
+                
+                /*if (affectiveStateFlags.activeProblemIndex == (questions.getTotalQuestions() - 1)) {
+                  $studentInfo.find(".absence-complete-indicator").html("Completed!").hide(0);
+                } else*/
+                if (!students[index].getAssignmentCompletedFlag() &amp;&amp; affectiveStateFlags.activeProblemIndex &lt; (questions.getTotalQuestions() - 1)) {
+                  $studentInfo.find(".absence-complete-indicator").html("Incomplete!").hide(0);
+                }
+                
+                if (affectiveStateFlags) {
+                  //clear everything before ploting
+                  $studentInfo.removeClass("disabled");
+                  $studentInfo.find(".progress").show(0);
+                  $studentInfo.find(".current-assignment-progress").attr('aria-valuenow', affectiveStateFlags.progressPercentage)
+                  .css({
+                    'width': affectiveStateFlags.progressPercentage + '%'
+                  });
+                  if (affectiveStateFlags.redZone &amp;&amp; !($studentInfo.hasClass("red-marked"))) {
+                    $studentInfo.addClass("red-marked");
+                    if ($infoRedZone.is(":hidden")) {
+                      $infoRedZone.show(0); //show the view if it is hidden
+                    }
+                    if (!$placeholderRed.is(":hidden")) {
+                      $placeholderRed.hide(0);
+                    }
+                    $infoRedZone.find(".student-row").append("&lt;p class=\"student-info expand-reveal2\" id=\"" + studentNameID + "_red\" " +
+                    "data-activeProblem=\"" + affectiveStateFlags.activeProblemIndex + "\" data-student_index=\"" + index + "\">" +
+                    students[index].getName() + "&lt;/p>");
+                    $("#" + studentNameID + "_red").click(function() {});
+                  } else if (!affectiveStateFlags.redZone) {
+                    if ($("#" + studentNameID + "_red").data("activeProblem") != affectiveStateFlags.activeProblemIndex) {
+                      $studentInfo.removeClass("red-marked");
+                      $("#" + studentNameID + "_red").remove();
+                    }
+                  }
+                  
+                  if (affectiveStateFlags.goldZone &amp;&amp; !($studentInfo.hasClass("gold-marked"))) {
+                    // $studentInfo.find(".good-job-badge").show(0);
+                    // $(".student-img-gold").show(0);
+                    // $(".student-img-regular").hide(0);
+                    $studentInfo.addClass("gold-marked ");
+                    $studentInfo.find(".custom-floating-icon").show(0);
+                    if ($infoGoldZone.is(":hidden")) {
+                      $infoGoldZone.show(0); //show the view if it is hidden
+                    }
+                    if (!$placeholderGold.is(":hidden")) {
+                      $placeholderGold.hide(0);
+                    }
+                    $infoGoldZone.find(".student-row").append("&lt;p class=\"student-info expand-reveal2\" id=\"" + studentNameID + "_gold\" " +
+                    "data-activeProblem=\"" + affectiveStateFlags.activeProblemIndex + "\" data-student_index=\"" + index + "\">" +
+                    students[index].getName() + "&lt;/p>");
+                    $("#" + studentNameID + "_gold").click(function() {});
+                  } else if (!affectiveStateFlags.goldZone) {
+                    if ($("#" + studentNameID + "_gold").data("activeProblem") != affectiveStateFlags.activeProblemIndex) {
+                      $studentInfo.removeClass("gold-marked");
+                      $("#" + studentNameID + "_gold").remove();
+                    }
+                  }
+                }
+              } else {
+                // $studentInfo.find(".absence-complete-indicator").show(0);
+                $parentStudentRow = $studentInfo.parent();
+                //if ($parentStudentRow.find(".student-info").length == 1 &amp;&amp; $parentStudentRow.hasClass("question"+ (questions.getTotalQuestions() - 1))) {
+                //    $parentStudentRow.addClass("empty-question");
+                //}
+                
+                
+                if (!$studentInfo.data("is-absentee-completed")) {
+                  $studentInfo.css({
+                    "order": students[index].getTotalScore()
+                  });
+                  $studentInfo.data("is-absentee-completed", true);
+                  $lastFiveProblems = $studentInfo.find(".last-five-problems");
+                  lastFiveCorrectness = students[index].getLastFiveProblemCorrectness2(questions.getTotalQuestions() - 1);
+                  if (students[index].getAssignmentCompletedFlag()) {
+                    $detachedObj = $studentInfo.detach();
+                    $detachedObj.appendTo(".completions");
+                    $lastFiveProblems.html(lastFiveCorrectness);
+                    /* $lastFiveProblems.html('');
+                    lastFiveCorrectness.forEach(correct => {
+                      if (correct) {
+                        $lastFiveProblems.append("&lt;span class='check' > &amp;check;&lt;/span>");
+                      } else {
+                        $lastFiveProblems.append("&lt;span class='cross' > &amp;cross; &lt;/span>");
+                      }
+                    });*/
+                    
+                  } else if ($studentInfo.find(".absence-complete-indicator").html() == "Absent!") {
+                    $detachedObj = $studentInfo.detach();
+                    $detachedObj.appendTo(".absentees");
+                  } else {
+                    $detachedObj = $studentInfo.detach();
+                    $detachedObj.appendTo(".incomplete");
+                    $lastFiveProblems.html(lastFiveCorrectness);
+                    /*$lastFiveProblems.html('');
+                    lastFiveCorrectness.forEach(correct => {
+                      if (correct) {
+                        $lastFiveProblems.append("&lt;span class='check' > &amp;check;&lt;/span>");
+                      } else {
+                        $lastFiveProblems.append("&lt;span class='cross' > &amp;cross; &lt;/span>");
+                      }
+                    });*/
+                  }
+                }
+                if (!$studentInfo.hasClass('disabled'))
+                $studentInfo.addClass(["disabled-complete", "disabled-complete-probelm-analysis"]).removeClass(["red-marked", "gold-marked", "disabled"]);
+                
+                $("#" + studentNameID + "_red, #" + studentNameID + "_gold").remove();
+                
+                if ($placeholderGold.is(":hidden") &amp;&amp; $infoGoldZone.find(".student-row").find(".student-info").length == 1) {
+                  $placeholderGold.show(0);
+                }
+                if ($placeholderRed.is(":hidden") &amp;&amp; $infoRedZone.find(".student-row").find(".student-info").length == 1) {
+                  $placeholderRed.show(0);
+                }
+              }
+            }
+            var $problemLevelAnalysisContainer = $(".tutoring-problem-level-analysis-container");
+            var $scrollLeft = $(".scroll-left");
+            var $scrollRight = $(".scroll-right");
+            
+            // if (($problemLevelAnalysisContainer.width() + $problemLevelAnalysisContainer.scrollLeft()) &lt; $problemLevelAnalysisContainer[0].scrollWidth) {
+            $scrollLeft.hide(0);
+            $scrollRight.hide(0);
+            // } else {
+            if (($problemLevelAnalysisContainer.width() + $problemLevelAnalysisContainer.scrollLeft()) &lt; $problemLevelAnalysisContainer[0].scrollWidth) {
+              $scrollRight.show(0);
+            }
+            
+            if ($problemLevelAnalysisContainer.scrollLeft() > 0) {
+              $scrollLeft.show(0);
+            }
+            // }
+          }
+          
+          function startActionPlaybackProblemLevelLIVE(currentLiveTime) {
+            var $studentInfos = $(".info-block-general .student-info");
+            var $infoRedZone = $(".info-red-zone");
+            var $infoGoldZone = $(".info-gold-zone");
+            var $infoBlockZones = $(".info-block-zones");
+            var $placeholderRed = $("#placeholder-red");
+            var $placeholderGold = $("#placeholder-gold");
+            
+            var affectiveStateFlags;
+            var lastFiveCorrectness;
+            var $lastFiveProblems;
+            var $studentInfo;
+            var studentNameID;
+            var $assignmentProgressIndicator;
+            var studentNameIDs = students.map(std => std.getName());
+            var index = 0;
+            var $detachedObj = null;
+            var $parentStudentRow;
+            for (var i = 0; i &lt; $studentInfos.length; i++) {
+              $studentInfo = $($studentInfos[i]);
+              index = studentNameIDs.indexOf($studentInfo.find(".student-name-info").html().trim());
+              
+              studentNameID = students[index].getName().replace(/\s+/g, '').replace(/[^\w\s]/gi, '');
+              if ((students[index].getStartTime() &lt; currentLiveTime &amp;&amp; students[index].getStartTime() > 0) &amp;&amp; (!students[index].getAssignmentCompletedFlagLIVE())) {
+                // clear everything before ploting
+                // $($studentInfo[index]).removeClass("disabled");
+                $studentInfo.removeClass(["disabled-complete", "disabled-complete-probelm-analysis"]).data("is-absentee-completed", false);
+                $studentInfo.find(".absence-complete-indicator").hide(0);
+                
+                $lastFiveProblems = $studentInfo.find(".last-five-problems");
+                
+                affectiveStateFlags = students[index].getStudentAffectState(currentLiveTime);
+                
+                if ($studentInfo.data("active-problem") != (affectiveStateFlags.activeProblemIndex + 1) &amp;&amp; affectiveStateFlags.activeProblemIndex >= 0 &amp;&amp; (affectiveStateFlags.activeProblemIndex + 1) &lt; questions.getTotalQuestions()) {
+                  $parentStudentRow = $studentInfo.parent();
+                  $detachedObj = $studentInfo.detach();
+                  //if ($parentStudentRow.find(".student-info").length == 0) {
+                  //  $parentStudentRow.addClass("empty-question");
+                  //}
+                  $detachedObj.appendTo(".question" + (affectiveStateFlags.activeProblemIndex + 1));
+                  //$(".question" + (affectiveStateFlags.activeProblemIndex + 1)).removeClass("empty-question");
+                  $studentInfo.data("active-problem", (affectiveStateFlags.activeProblemIndex + 1));
+                } else if ($studentInfo.data("active-problem") != (affectiveStateFlags.activeProblemIndex + 1) &amp;&amp; affectiveStateFlags.activeProblemIndex >= 0 &amp;&amp; (affectiveStateFlags.activeProblemIndex + 1) == questions.getTotalQuestions()) {
+                  // this code only comes into play when the user jumps in the time bar
+                  $parentStudentRow = $studentInfo.parent();
+                  $detachedObj = $studentInfo.detach();
+                  $detachedObj.appendTo(".question" + (affectiveStateFlags.activeProblemIndex));
+                  $(".question" + (affectiveStateFlags.activeProblemIndex)); //.removeClass("empty-question");
+                  $studentInfo.data("active-problem", (affectiveStateFlags.activeProblemIndex));
+                }
+                
+                lastFiveCorrectness = students[index].getLastFiveProblemCorrectness2(affectiveStateFlags.activeProblemIndex);
+                if (lastFiveCorrectness) {
+                  $lastFiveProblems.html(lastFiveCorrectness);
+                  
+                  if ((affectiveStateFlags.activeProblemIndex + 1) &lt; questions.getTotalQuestions())
+                  $lastFiveProblems.append("&lt;i class=\"fa fa-lightbulb-o thinking-flash\" aria-hidden=\"true\">&lt;/i>");
+                }
+                
+                /* lastFiveCorrectness = students[index].getLastFiveProblemCorrectness(affectiveStateFlags.activeProblemIndex);
+                if (lastFiveCorrectness &amp;&amp; affectiveStateFlags.activeProblemIndex != null) {
+                  $lastFiveProblems.html('');
+                  lastFiveCorrectness.forEach(correct => {
+                    if (correct) {
+                      $lastFiveProblems.append("&lt;span class='check' > &amp;check;&lt;/span>");
+                    } else {
+                      $lastFiveProblems.append("&lt;span class='cross' > &amp;cross; &lt;/span>");
+                    }
+                  });
+                  if ((affectiveStateFlags.activeProblemIndex + 1) &lt; questions.getTotalQuestions())
+                  $lastFiveProblems.append("&lt;i class=\"fa fa-lightbulb-o thinking-flash\" aria-hidden=\"true\">&lt;/i>");
+                }*/
+                
+                if (affectiveStateFlags.activeProblemIndex != null)
+                $studentInfo.find(".assignment-progress-indicator").html("&amp;nbsp;" + (affectiveStateFlags.activeProblemIndex + 1) + "/" + questions.getTotalQuestions());
+                
+                /*if (affectiveStateFlags.activeProblemIndex == (questions.getTotalQuestions() - 1) &amp;&amp; students[index].getAssignmentCompletedFlag()) {
+                  $studentInfo.find(".absence-complete-indicator").html("Completed!").hide(0);
+                } else*/
+                if (!students[index].getAssignmentCompletedFlagLIVE() &amp;&amp; affectiveStateFlags.activeProblemIndex &lt; (questions.getTotalQuestions() - 1)) {
+                  $studentInfo.find(".absence-complete-indicator").html("Incomplete!").hide(0);
+                }
+                
+                if (affectiveStateFlags) {
+                  //clear everything before ploting
+                  $studentInfo.removeClass("disabled");
+                  $studentInfo.find(".progress").show(0);
+                  $studentInfo.find(".current-assignment-progress").attr('aria-valuenow', affectiveStateFlags.progressPercentage)
+                  .css({
+                    'width': affectiveStateFlags.progressPercentage + '%'
+                  });
+                  if (affectiveStateFlags.redZone &amp;&amp; !($studentInfo.hasClass("red-marked"))) {
+                    $studentInfo.addClass("red-marked");
+                    if ($infoRedZone.is(":hidden")) {
+                      $infoRedZone.show(0); //show the view if it is hidden
+                    }
+                    if (!$placeholderRed.is(":hidden")) {
+                      $placeholderRed.hide(0);
+                    }
+                    $infoRedZone.find(".student-row").append("&lt;p class=\"student-info expand-reveal2\" id=\"" + studentNameID + "_red\" " +
+                    "data-activeProblem=\"" + affectiveStateFlags.activeProblemIndex + "\" data-student_index=\"" + index + "\">" +
+                    students[index].getName() + "&lt;/p>");
+                    $("#" + studentNameID + "_red").click(function() {});
+                  } else if (!affectiveStateFlags.redZone) {
+                    if ($("#" + studentNameID + "_red").data("activeProblem") != affectiveStateFlags.activeProblemIndex) {
+                      $studentInfo.removeClass("red-marked");
+                      $("#" + studentNameID + "_red").remove();
+                    }
+                  }
+                  
+                  if (affectiveStateFlags.goldZone &amp;&amp; !($studentInfo.hasClass("gold-marked"))) {
+                    // $studentInfo.find(".good-job-badge").show(0);
+                    // $(".student-img-gold").show(0);
+                    // $(".student-img-regular").hide(0);
+                    $studentInfo.addClass("gold-marked ");
+                    $studentInfo.find(".custom-floating-icon").show(0);
+                    if ($infoGoldZone.is(":hidden")) {
+                      $infoGoldZone.show(0); //show the view if it is hidden
+                    }
+                    if (!$placeholderGold.is(":hidden")) {
+                      $placeholderGold.hide(0);
+                    }
+                    $infoGoldZone.find(".student-row").append("&lt;p class=\"student-info expand-reveal2\" id=\"" + studentNameID + "_gold\" " +
+                    "data-activeProblem=\"" + affectiveStateFlags.activeProblemIndex + "\" data-student_index=\"" + index + "\">" +
+                    students[index].getName() + "&lt;/p>");
+                    $("#" + studentNameID + "_gold").click(function() {});
+                  } else if (!affectiveStateFlags.goldZone) {
+                    if ($("#" + studentNameID + "_gold").data("activeProblem") != affectiveStateFlags.activeProblemIndex) {
+                      $studentInfo.removeClass("gold-marked");
+                      $("#" + studentNameID + "_gold").remove();
+                    }
+                  }
+                }
+              } else {
+                // $studentInfo.find(".absence-complete-indicator").show(0);
+                $parentStudentRow = $studentInfo.parent();
+                //if ($parentStudentRow.find(".student-info").length == 1 &amp;&amp; $parentStudentRow.hasClass("question"+ (questions.getTotalQuestions() - 1))) {
+                //    $parentStudentRow.addClass("empty-question");
+                //}
+                if (!$studentInfo.data("is-absentee-completed")) {
+                  $studentInfo.css({
+                    "order": students[index].getTotalScore()
+                  });
+                  $studentInfo.data("is-absentee-completed", true);
+                  $lastFiveProblems = $studentInfo.find(".last-five-problems");
+                  lastFiveCorrectness = students[index].getLastFiveProblemCorrectness2(questions.getTotalQuestions() - 1);
+                  $studentInfo.find(".absence-complete-indicator").hide(0);
+                  $studentInfo.removeClass("disabled");
+                  //if ($studentInfo.find(".absence-complete-indicator").html() == "Completed!") {
+                  if (students[index].getAssignmentCompletedFlagLIVE()) {
+                    $detachedObj = $studentInfo.detach();
+                    $detachedObj.appendTo(".completions");
+                    $lastFiveProblems.html(lastFiveCorrectness);
+                    /*$lastFiveProblems.html('');
+                    lastFiveCorrectness.forEach(correct => {
+                      if (correct) {
+                        $lastFiveProblems.append("&lt;span class='check' > &amp;check;&lt;/span>");
+                      } else {
+                        $lastFiveProblems.append("&lt;span class='cross' > &amp;cross; &lt;/span>");
+                      }
+                    });*/
+                  } else if ($studentInfo.find(".absence-complete-indicator").html() == "Not Started!") {
+                    // $studentInfo.find(".absence-complete-indicator").html("Not-Started!").show(0);
+                    $detachedObj = $studentInfo.detach();
+                    $detachedObj.appendTo(".not-started");
+                  }
+                  //else if ($studentInfo.find(".absence-complete-indicator").html() == "Absent!") {
+                  //  $detachedObj = $studentInfo.detach();
+                  //  $detachedObj.appendTo(".absentees");
+                  //}
+                }
+                if (!$studentInfo.hasClass('disabled'))
+                $studentInfo.addClass(["disabled-complete", "disabled-complete-probelm-analysis"]).removeClass(["red-marked", "gold-marked", "disabled"]);
+                
+                $("#" + studentNameID + "_red, #" + studentNameID + "_gold").remove();
+                
+                if ($placeholderGold.is(":hidden") &amp;&amp; $infoGoldZone.find(".student-row").find(".student-info").length == 1) {
+                  $placeholderGold.show(0);
+                }
+                if ($placeholderRed.is(":hidden") &amp;&amp; $infoRedZone.find(".student-row").find(".student-info").length == 1) {
+                  $placeholderRed.show(0);
+                }
+              }
+            }
+            var $problemLevelAnalysisContainer = $(".tutoring-problem-level-analysis-container");
+            var $scrollLeft = $(".scroll-left");
+            var $scrollRight = $(".scroll-right");
+            
+            // if (($problemLevelAnalysisContainer.width() + $problemLevelAnalysisContainer.scrollLeft()) &lt; $problemLevelAnalysisContainer[0].scrollWidth) {
+            $scrollLeft.hide(0);
+            $scrollRight.hide(0);
+            // } else {
+            if (($problemLevelAnalysisContainer.width() + $problemLevelAnalysisContainer.scrollLeft()) &lt; $problemLevelAnalysisContainer[0].scrollWidth) {
+              $scrollRight.show(0);
+            }
+            
+            if ($problemLevelAnalysisContainer.scrollLeft() > 0) {
+              $scrollLeft.show(0);
+            }
+            // }
+          }
+          
+          function startActionLIVE(currentLiveTime) {
+            var $studentInfos = $(".info-block-general .student-info");
+            var $infoRedZone = $(".info-red-zone");
+            var $infoGoldZone = $(".info-gold-zone");
+            var $infoBlockZones = $(".info-block-zones");
+            var $placeholderRed = $("#placeholder-red");
+            var $placeholderGold = $("#placeholder-gold");
+            
+            var affectiveStateFlags;
+            var lastFiveCorrectness;
+            var $lastFiveProblems;
+            var $studentInfo;
+            var studentNameID;
+            var $assignmentProgressIndicator;
+            
+            for (var i = 0; i &lt; $studentInfos.length; i++) {
+              $studentInfo = $($studentInfos[i]);
+              studentNameID = students[i].getName().replace(/\s+/g, '').replace(/[^\w\s]/gi, '');
+              if (students[i].getStartTime() &lt; currentLiveTime &amp;&amp; students[i].getStartTime() > 0 &amp;&amp; (!students[i].getAssignmentCompletedFlagLIVE())) {
+                // clear everything before ploting
+                // $($studentInfo[i]).removeClass("disabled");
+                $studentInfo.find(".absence-complete-indicator").hide(0);
+                
+                $lastFiveProblems = $studentInfo.find(".last-five-problems");
+                
+                affectiveStateFlags = students[i].getStudentAffectState(currentLiveTime);
+                
+                lastFiveCorrectness = students[i].getLastFiveProblemCorrectness2(affectiveStateFlags.activeProblemIndex);
+                if(lastFiveCorrectness) {
+                  $lastFiveProblems.html(lastFiveCorrectness);
+                }
+                
+                /*if (lastFiveCorrectness &amp;&amp; affectiveStateFlags.activeProblemIndex != null) {
+                  $lastFiveProblems.html('');
+                  lastFiveCorrectness.forEach(correct => {
+                    if (correct) {
+                      $lastFiveProblems.append("&lt;span class='check' > &amp;check;&lt;/span>");
+                    } else {
+                      $lastFiveProblems.append("&lt;span class='cross' > &amp;cross; &lt;/span>");
+                    }
+                  });
+                }*/
+                if (affectiveStateFlags.activeProblemIndex != null)
+                $studentInfo.find(".assignment-progress-indicator").html("&amp;nbsp;" + (affectiveStateFlags.activeProblemIndex + 1) + "/" + questions.getTotalQuestions());
+                
+                /*if (affectiveStateFlags.activeProblemIndex == (questions.getTotalQuestions() - 1)) {
+                  $studentInfo.find(".absence-complete-indicator").html("Completed!").hide(0);
+                } else */
+                if (!students[i].getAssignmentCompletedFlagLIVE() &amp;&amp; affectiveStateFlags.activeProblemIndex &lt; (questions.getTotalQuestions() - 1)) {
+                  $studentInfo.find(".absence-complete-indicator").html("Incomplete!").hide(0);
+                }
+                
+                if (affectiveStateFlags) {
+                  //clear everything before ploting
+                  $studentInfo.removeClass("disabled");
+                  $studentInfo.find(".progress").show(0);
+                  $studentInfo.find(".current-assignment-progress").attr('aria-valuenow', affectiveStateFlags.progressPercentage)
+                  .css({
+                    'width': affectiveStateFlags.progressPercentage + '%'
+                  });
+                  if (affectiveStateFlags.redZone &amp;&amp; !($studentInfo.hasClass("red-marked"))) {
+                    
+                    $studentInfo.addClass("red-marked");
+                    if ($infoRedZone.is(":hidden")) {
+                      $infoRedZone.show(0); //show the view if it is hidden
+                    }
+                    if (!$placeholderRed.is(":hidden")) {
+                      $placeholderRed.hide(0);
+                    }
+                    $infoRedZone.find(".student-row").append("&lt;p class=\"student-info expand-reveal2\" id=\"" + studentNameID + "_red\" " +
+                    "data-activeProblem=\"" + affectiveStateFlags.activeProblemIndex + "\" data-student_index=\"" + i + "\">" +
+                    students[i].getName() + "&lt;/p>");
+                    $("#" + studentNameID + "_red").click(function() {});
+                  } else if (!affectiveStateFlags.redZone) {
+                    if ($("#" + studentNameID + "_red").data("activeProblem") != affectiveStateFlags.activeProblemIndex) {
+                      $studentInfo.removeClass("red-marked");
+                      $("#" + studentNameID + "_red").remove();
+                    }
+                  }
+                  
+                  if (affectiveStateFlags.goldZone &amp;&amp; !($studentInfo.hasClass("gold-marked"))) {
+                    $studentInfo.addClass("gold-marked ");
+                    $studentInfo.find(".custom-floating-icon").show(0);
+                    if ($infoGoldZone.is(":hidden")) {
+                      $infoGoldZone.show(0); //show the view if it is hidden
+                    }
+                    if (!$placeholderGold.is(":hidden")) {
+                      $placeholderGold.hide(0);
+                    }
+                    $infoGoldZone.find(".student-row").append("&lt;p class=\"student-info expand-reveal2\" id=\"" + studentNameID + "_gold\" " +
+                    "data-activeProblem=\"" + affectiveStateFlags.activeProblemIndex + "\" data-student_index=\"" + i + "\">" +
+                    students[i].getName() + "&lt;/p>");
+                    $("#" + studentNameID + "_gold").click(function() {});
+                  } else if (!affectiveStateFlags.goldZone) {
+                    if ($("#" + studentNameID + "_gold").data("activeProblem") != affectiveStateFlags.activeProblemIndex) {
+                      $studentInfo.removeClass("gold-marked");
+                      $("#" + studentNameID + "_gold").remove();
+                    }
+                  }
+                }
+              } else {
+                if (students[i].getAssignmentCompletedFlagLIVE()) {
+                  $studentInfo.find(".absence-complete-indicator").html("Completed!");
+                }
+                
+                switch ($studentInfo.find(".absence-complete-indicator").html()) {
+                  case "Completed!":
+                  $studentInfo.removeClass("red-marked gold-marked");
+                  $studentInfo.removeClass("disabled");
+                  $studentInfo.find(".absence-complete-indicator").addClass("complete-indicator");
+                  break;
+                  case "Incomplete!":
+                  $studentInfo.removeClass("red-marked gold-marked");
+                  $studentInfo.removeClass("disabled");
+                  $studentInfo.find(".absence-complete-indicator").addClass("incomplete-indicator");
+                  break;
+                  case "Not Started!":
+                  $studentInfo.addClass("disabled");
+                  break;
+                  default:
+                  break;
+                }
+                
+                $studentInfo.find(".absence-complete-indicator").show(0);
+                if (!$studentInfo.hasClass('disabled'))
+                $studentInfo.addClass("disabled-complete");
+                
+                $("#" + studentNameID + "_red, #" + studentNameID + "_gold").remove();
+                
+                if ($placeholderGold.is(":hidden") &amp;&amp; $infoGoldZone.find(".student-row").find(".student-info").length == 1) {
+                  $placeholderGold.show(0);
+                }
+                if ($placeholderRed.is(":hidden") &amp;&amp; $infoRedZone.find(".student-row").find(".student-info").length == 1) {
+                  $placeholderRed.show(0);
+                }
+              }
+            }
+          }
+          
+          $(".fullscreen-btn").click(function(e) {
+            teacherPreferences.fullscreenMode = !teacherPreferences.fullscreenMode;
+            toggleFullScreen(teacherPreferences.fullscreenMode);
+          });
+          
+          function toggleFullScreen(fullscreen) {
+            $fullScreenBtn.toggle(!fullscreen);
+            $normalScreenBtn.toggle(fullscreen);
+            $('.header-nav-bar, .info-block-header').toggle(!fullscreen);
+            // $('#footer-container').toggle(!fullscreen);
+            $('.content-block').toggleClass('content-block-fullscreen');
+            $('.info-block').toggleClass('info-block-fullscreen');
+          }
+          
+          $(".anonymize-btn").click(function(e) {
+            $(".student-name-info, .info-block-zones").toggle();
+            $(".student-name-info-anonymous").toggle();
+            
+          });
+          
+          function pauseSlider(pauseSlider = true) {
+            paused = pauseSlider;
+            $pauseBtn.toggle(!paused);
+            $playBtn.toggle(paused);
+            $reloadBtn.hide(0);
+            
+            clearInterval(sliderInterval);
+          }
+          
+          var $playbtn = $(".play-btn");
+          
+          $playbtn.click(function() {
+            paused = !paused;
+            pauseSlider(paused);
+            startSlider();
+          });
+          
+          var mainplayerInFocus = true;
+          keyboardJS.bind('space', function(e) {
+            if (mainplayerInFocus) {
+              e.preventDefault();
+              if (!paused) {
+                $($playbtn[1]).trigger("click");
+              } else {
+                $($playbtn[0]).trigger("click");
+              }
+              // console.log("crtl space clicked");
+            }
+          });
+          
+          $(".speedup-btn").click(function() {
+            if (playbackSpeed &lt; 16) {
+              clearInterval(sliderInterval);
+              playbackSpeed = playbackSpeed >= 16 ? 16 : playbackSpeed * 2;
+              startSlider();
+              
+              toggleSpeedBtnDisable();
+            }
+            
+            function setMainplayerInFocus(bool) {
+              mainplayerInFocus = bool;
+            }
+            
+            function setMainplayerInFocus(bool) {
+              mainplayerInFocus = bool;
+            }
+            
+          });
+          
+          $(".speeddown-btn").click(function() {
+            if (playbackSpeed > 1) {
+              clearInterval(sliderInterval);
+              playbackSpeed = playbackSpeed &lt;= 1 ? 1 : playbackSpeed / 2;
+              startSlider();
+              
+              toggleSpeedBtnDisable();
+            }
+          });
+          
+          
+          //Enable or disable speed up or speed down buttons
+          function toggleSpeedBtnDisable() {
+            $('.speedup-btn').toggleClass("disabled-ctrl", playbackSpeed == 16);
+            $('.speeddown-btn').toggleClass("disabled-ctrl", playbackSpeed == 1);
+          }
+          
+          $reloadBtn.click(function() {
+            $reloadBtn.hide(0);
+            $pauseBtn.show(0);
+            testingSeatingArrangementCompletion();
+          });
+          
+          $.fn.hasAnyClass = function() {
+            for (var i = 0; i &lt; arguments.length; i++) {
+              if (this.hasClass(arguments[i])) {
+                return true;
+              }
+            }
+            return false;
+          }
+          
+          // open up student info modal
+          $(document).on('click', '.student-info', function(e) {
+            if ($(this).hasAnyClass('disabled', 'placeholder')) return false;
+            
+            setMainplayerInFocus(false);
+            
+            var studentIndex = $(e.currentTarget).data('student_index');
+            var studentData = students[studentIndex];
+            $(".dialog-container, .dialog-student").show(0);
+            if (playbackFlag) {
+              pauseSlider();
+              var studentModal = new StudentInfoModal();
+              studentModal.init(studentData, questions, teacherPreferences.currentPlaybackTime, $($playbtn[0]), setMainplayerInFocus, $(".info-block-zones").is(":hidden"));
+            } else {
+              var studentModal = new StudentInfoModal();
+              studentModal.init(studentData, questions, currentLiveTime, $($playbtn[0]), setMainplayerInFocus, $(".info-block-zones").is(":hidden"));
+            }
+          });
+
+        
+          
+        });</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#generateAffectiveStatesFromTime">generateAffectiveStatesFromTime</a></li><li><a href="global.html#getTimeSpent">getTimeSpent</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#updateUserReport">updateUserReport</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Fri Jul 30 2021 02:53:21 GMT-0400 (Eastern Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+org.assistments.livechart
+org.assistments.livechart.affectdetector.affectextractor
+org.assistments.livechart.affectdetector.dataset
+org.assistments.livechart.affectdetector.statobjects
+org.assistments.livechart.affectdetector.utils
+org.assistments.livechart.dao
+org.assistments.livechart.dao.impl
+org.assistments.livechart.dao.impl.jdbc
+org.assistments.livechart.domain
