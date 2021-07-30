@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html>
+<style>
+.div1 {
+    width: 200px;
+    height: 130px;
+    border: 0.2px solid black;
+    style="font-size:10%"
+}
+<!--
+#mydiv2 {
+    position: absolute;
+    z-index: 9;
+    background-color: #f1f1f1;
+    text-align: center;
+    border: 1px solid #d3d3d3;
+}
+
+#mydiv1 {
+    position: absolute;
+    z-index: 9;
+    background-color: #f1f1f1;
+    text-align: center;
+    border: 1px solid #d3d3d3;
+}
+-->
+.poz
+{
+position:absolute;top:20px; right:10px;
+}
+.pos2
+{
+position:absolute;top:50px; left:10px;
+}
+
+.pos3
+{
+position:absolute;top:100px; left:10px;
+}
+[id^="mydiv"] {
+    position: absolute;
+    z-index: 9;
+    background-color: #f1f1f1;
+    text-align: center;
+    font-size: 8px;
+    
+    
+    height: 35px;
+    
+    
+}
+#board {
+    margin: 500px 0;
+    cursor: move;
+    
+}
+<!--
+border: 1px solid #d3d3d3;
+[id$="header"] {
+    padding: 10px;
+    cursor: move;
+    z-index: 10;
+    
+    background-color: #2196F3;
+    color: #fff;
+}
+-->
+[id$="header"] {
+    padding: 10px;
+    cursor: move;
+    z-index: 10;
+    
+    background-color: #91b0c9;
+    color: #fff;
+}
+
+#buttons{
+ top: 191px;
+    left: 420px;
+}
+#mydiv2header {
+    padding: 10px;
+    cursor: move;
+    z-index: 10;
+    background-color: #2196F3;
+    color: #fff;
+}
+
+#mydiv1header {
+    padding: 10px;
+    cursor: move;
+    z-index: 20;
+    background-color: #2196F3;
+    color: #fff;
+}
+</style>
+<body>
+
+<center><h1>Class room seating chart</h1></center>
+
+<center><p>Click and hold the mouse button down while moving the student</p></center>
+<p id="demo"></p>
+<p id='test'> Hello </p>
+
+<br> </br>
+<button id="log">Start Logging</button>
+<!--<button id="log1">Start Logging1</button>-->
+<div id="buttons">
+
+<button id="jquerytest">Save Class layout</button>
+</div>
+<br></br>
+
+<!--
+<p>Choose the class time:</p>
+Date:<input id="date" type="date" name="class_date" />
+<br>
+Time:<input id="time" type="time" name="class_time" />
+<br>
+<br>
+-->
+<p>Color codes:</p>
+
+<div class="div1"><font color="#2196F3"><b>Blue:</b></font> Active </b><br><font color="#008040"><b>Dark green:</b></font> Correctness Streak</b><br><font color="#40ff00"><b>Light Green:</b></font> Learning <br><font color="#990000"> <b>Maroon</b></font>: Struggling <br><font color="#ffd700"><b>Yellow</b></font>:Idle</font>  </div>
+<br>
+
+<!--
+
+<div id="mydiv100">
+  <div id="mydiv2header">Student 2</div>
+</div>
+
+-->
+<!--  
+</div>
+
+<div id="mydiv1">
+  <div id="mydiv1header">Student 1</div>
+  
+</div>
+-->
+
+<div style="text-align: center;">
+   <input type="button" value="Speed Up >>" >
+   <input id="speed" type="text" name="firstname" value="10">
+</div>
+
+
+
+<div  style="text-align: center;">
+   
+<p align="center">BOARD</p>
+<hr width="1000" align="center">
+
+</div>
+
+<div id="board">
+   
+<p align="center" stlye="top:11px;">BOARD</p>
+<hr width="1000" align="center">
+
+</div>
+
+<!--
+<div id="buttons">
+
+<button id="jquerytest">Save Class layout</button>
+</div>
+-->
+
+
+<!--
+<div id="mydiv">
+  <div id="mydivheader">Student 4</div>
+  
+</div>
+<div id="mydiv">
+  <div id="mydivheader">Student 5</div>
+  
+</div>
+<div id="mydiv">
+  <div id="mydivheader">Student 6</div>
+  
+</div>
+<div id="mydiv">
+  <div id="mydivheader">Student 7</div>
+  
+</div>
+<div id="mydiv">
+  <div id="mydivheader">Student 8</div>
+  
+</div>
+<div id="mydiv">
+  <div id="mydivheader">Student 9</div>
+  
+</div>
+<div id="mydiv">
+  <div id="mydivheader">Student 10</div>
+  
+</div>
+-->
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+<script type="text/javascript" charset="utf-8">
+//<script type="text/javascript">
+
+console.log("I am in javascript");
+namespace = '/test';
+var count_1=0;
+var socket = io.connect('http://' + document.domain + ':' + location.port + namespace);
+        $(function() {
+          $('#log1').bind('click', function() {
+            console.log("I GOT CLICKED");
+            $.getJSON('/background_process_test',
+                function(data) {
+              //do nothing
+            });
+            return false;
+          });
+        });
+
+
+        $(document).ready(function(){
+            namespace = '/test'; // change to an empty string to use the global namespace
+            console.log("I am inside function");
+            // the socket.io documentation recommends sending an explicit package upon connection
+            // this is specially important when using the global namespace
+            //var socket = io.connect('http://' + document.domain + ':' + location.port + namespace);
+            
+            socket.on('connect', function(msg) {
+                socket.emit('my event', {data: 'I\'m connected!'});
+            });
+
+            
+            console.log("I am in ready function");
+            socket.on('message', function(msg){
+                
+                console.log(msg.message_sent)
+                var p_list=JSON.parse(msg.message_sent);
+                var res=JSON.parse(msg.message_sent);
+                console.log("Checking to see what we recieved:");
+                console.log(res);
+                console.log(typeof res)
+                var count=res.length;
+                /*
+                for (var i=0;i<count-5;i++)
+                {
+                console.log("trying to access")
+
+                act = res[i];
+                console.log("User:",act.student_id);
+                console.log("Action:",act.action);
+                console.log("Date:",act.date);
+
+
+                }*/
+                if(count>0){
+                    console.log("RES:",res)
+                    var a=res[0]
+                    var assignment_id=a.assignment_id
+                    var problem_log_id=a.problem_log_id
+                    var correct=a.correct;
+                    console.log("Correct",correct);
+                    console.log("problem_log_id",problem_log_id);
+                    $('#test').html('<p>' + a.date + '</p>');
+
+                    console.log("Action is:"+a.action);
+                    //try changing color
+                    id_name='mydiv'+a.student_id+'header';
+                    console.log("Name:"+id_name);
+                    var studentdiv = document.getElementById(id_name);
+                    console.log("Student DIV:"+studentdiv);
+                    if (studentdiv == null)
+                    {
+                        console.log("Student not present in this class");
+                    }
+                    else
+                    {   count_1=count_1+1;
+                        console.log("Count_1:",count_1);
+                        console.log("Student present in this class");
+                        console.log("Student list:", student_list);
+
+                        console.log("Before:"+studentdiv.style.backgroundColor);
+
+
+
+                        if(student_list[a.student_id].check_timer())
+                        {
+                            //don't change color
+                        }
+                        else
+                        {
+                             studentdiv.style.backgroundColor='#2196F3';
+                             console.log("Changed to blue");
+                             console.log("After:"+studentdiv.style.backgroundColor);
+                        }
+
+
+                        (student_list[a.student_id].actions).push(a.action)
+                        var newDate = new Date();
+                        var datetime =  newDate.getTime();
+                        console.log("Current Time:",datetime);
+                        (student_list[a.student_id].action_time).push(datetime);
+
+                        if(a.action=='answer')
+                        {
+                            var assignment_dict=student_list[a.student_id].assignment_id;
+                            console.log("Student's object:",student_list[a.student_id]);
+                            console.log("Assigment dict :", assignment_dict);
+                            console.log("Assignment dict keys:",assignment_dict.keys);
+
+
+
+                            //Rewriting logic with Obj.
+                            if(assignment_dict.hasOwnProperty(assignment_id)){
+
+                                console.log("CASE 1: Assignment exists");
+                                console.log("Assignment_id:"+assignment_id);
+
+
+                                if((assignment_dict[assignment_id]).includes(problem_log_id))
+                                {
+                                    console.log("CASE 1A");
+                                }
+                                else{
+                                    console.log("CASE 1B");
+                                    (student_list[a.student_id].assignment_id[assignment_id]).push(problem_log_id);
+                                    (student_list[a.student_id].correctness[assignment_id]).push(correct);
+                                    //Checking learning status
+                                    console.log("Checking for learning status");
+                                    student_list[a.student_id].check_learning(assignment_id);
+                                }
+
+                            }
+
+                            else {
+                                console.log("CASE 2");
+                                student_list[a.student_id].assignment_id[assignment_id]=[];
+                                (student_list[a.student_id].assignment_id[assignment_id]).push(problem_log_id);
+                                student_list[a.student_id].correctness[assignment_id]=[];
+
+                                (student_list[a.student_id].correctness[assignment_id]).push(correct);
+
+
+
+                            }
+
+
+                            var k = Object.keys(student_list);
+                            console.log("Printing studentlist after adding action");
+                            console.log(student_list);
+                            //Calling the detectors
+                            if(k.length != 0)
+                            {
+                                console.log("Checking for idle states");
+                                for (var i=0;i<k.length;i++)
+                                {
+                                    console.log("Student:"+i);
+                                    console.log(student_list[a.student_id]);
+                                    //Check for idle state
+                                    if(student_list[a.student_id] == undefined)
+                                    {
+                                        console.log("Undefined"+i);
+
+                                        //student_list[a.student_id].check_idle();
+
+                                    }
+                                    else {
+                                        console.log("Defined:"+i);
+
+                                        //If they already have a timer on, don't check idle
+                                        if(student_list[a.student_id].check_timer())
+                                        {
+                                            //don't change anything
+                                            student_list[a.student_id].timer_mgr();
+                                        }
+                                        else{
+                                            student_list[a.student_id].check_idle();
+                                            //student_list[a.student_id].timer_mgr();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    //call_detectors();
+                }
+            });
+        });
+
+var student_list={}
+
+
+
+function student(name, id) {
+   this.name = name;
+   this.id =  id;
+   this.actions = [] ;
+   this.action_time = [];
+}
+
+// added copy of Student_ class and methods from SCWN.html
+class Student_ {
+
+  constructor(name,id) {
+    this.name=name;
+    this.id = id;
+    this.actions=[]
+    this.action_time= []
+    this.assignment_id={}
+    this.correctness={}
+    this.timer=false;
+    this.timer_time=[]
+    this.timer_timestamp=0
+  }
+
+  check_idle(){
+      console.log("Checking idle");
+      var newDate = new Date();
+      var current_time =  newDate.getTime();
+      var times=this.action_time;
+      if(times.length!=0)
+      {
+          var last_action=times[times.length-1]
+          var diff=Math.abs(current_time - last_action);
+
+          console.log("Difference in time:"+diff);
+
+          if(diff >= 300000)
+          {
+              console.log("Current time:"+current_time);
+              console.log("Last action:"+last_action);
+              console.log("Changing to yellow");
+              id_name='mydiv'+this.id+'header';
+              console.log("Name:"+this.id);
+              var studentdiv = document.getElementById(id_name);
+              studentdiv.style.backgroundColor='yellow';
+
+              this.timer=true;
+              this.timer_timestamp=newDate.getTime();
+          }
+      }
+      else
+      {
+          //inactive student
+          console.log("Student mostly isnt active yet(0 actions so far)");
+
+      }
+
+  }
+
+  check_learning(assign_id){
+
+      console.log("Check learning function");
+      console.log("Assignment_ids:",this.assignment_id);
+      console.log("Correctness ids:",this.correctness);
+
+      var newDate = new Date();
+      var assign_id_probs=this.assignment_id[assign_id]
+      if(assign_id_probs.length>=3){
+          var results=this.correctness[assign_id];
+          var q3=results[results.length-1]
+          var q2=results[results.length-2]
+          var q1=results[results.length-3]
+
+          console.log("Results for last 3 questions:", q3,q2,q1);
+          //WRONG,WRONG,RIGHT --- LIGHT GREEN ---> LEARNING
+          if((q3==0) && (q2==0) && (q3==1)){
+
+              console.log("Good Learning")
+              var id_name='mydiv'+this.id+'header';
+              console.log("Name:"+id_name);
+              var studentdiv = document.getElementById(id_name);
+              studentdiv.style.backgroundColor='#ADFF2F';
+
+              this.timer=true;
+              this.timer_timestamp=newDate.getTime();
+
+          }
+
+          //RIGHT,RIGHT,RIGHT ---> DARK GREEN ---> CORRECTNESS STREAK
+          if((q3==1) && (q2==1) && (q3==1)){
+
+              console.log("Three right")
+              var id_name='mydiv'+this.id+'header';
+              console.log("Name:"+id_name);
+              var studentdiv = document.getElementById(id_name);
+              if (studentdiv == null)
+              {
+                  console.log("Student not present in this class");
+              }
+              else
+              {
+                  console.log("Student div NOT null"+studentdiv);
+                  //studentdiv.style.backgroundColor='#008040';
+                  alert("Before:"+studentdiv.style.backgroundColor);
+                  studentdiv.style.backgroundColor='darkgreen';
+                  alert("After:"+studentdiv.style.backgroundColor);
+                  console.log("Changed color ");
+                  this.timer=true;
+                  this.timer_timestamp=newDate.getTime();
+
+              }
+
+          }
+          //WRONG,WRONG,WRONG---> MAROON ---> STRUGGLING
+          if((q3==0) && (q2==0) && (q3==0)){
+
+              console.log("Struggling")
+              var id_name='mydiv'+this.id+'header';
+              console.log("Name:"+this.id);
+              var studentdiv = document.getElementById(id_name);
+              studentdiv.style.backgroundColor='#990000';
+
+              this.timer=true;
+              this.timer_timestamp=newDate.getTime();
+
+
+
+          }
+      }
+  }
+
+  check_timer(){
+
+      if (this.timer == true)
+      {
+          return true;
+      }
+
+      else
+      {
+          return false;
+      }
+
+
+  }
+  timer_mgr(){
+      console.log("Checking Timer Manager");
+
+      var newDate = new Date();
+      var current_time=newDate.getTime();
+      var duration = current_time-this.timer_timestamp;
+      if(duration > 60000){
+          this.timer=false;
+          var id_name='mydiv'+this.id+'header';
+          console.log("Name:"+this.id);
+          var studentdiv = document.getElementById(id_name);
+          studentdiv.style.backgroundColor='#2196F3';
+      }
+
+  }
+
+}
+
+
+function check_idle(){
+    
+    var keys = student_list.keys;
+    console.log("Keys:"+keys);
+    /*
+    for(i in keys) {
+
+        
+  `     var student_obj = student_list[i];
+        var newDate = new Date();
+        var datetime =  newDate.getTime();
+        console.log("Current Time:",datetime);
+        
+        var id=student_obj.student_id;
+        var times= student_obj.action_time;
+        var last_action_time=times[times.length-1]
+        
+        var diff=Math.abs(datetime - last_action_time);
+        
+        console.log("Difference in time:"+diff);
+        
+        /
+        if(diff >= 10 minutes)
+        {
+            id_name='mydiv'+id+'header';
+            console.log("Name:"+id);
+            var studentdiv = document.getElementById(id_name);
+            studentdiv.style.backgroundColor='yellow';
+        }    
+        
+        */
+        
+        
+        
+        
+
+        
+  
+    
+ 
+  // do something with "key" and "value" variables
+ 
+
+
+        
+
+
+}
+
+
+//Make the DIV element draggagle:
+
+var jso = {{ jsonData|tojson }};
+console.log(typeof jso);
+var obj = JSON.parse(jso);
+student_list = {};
+console.log(typeof obj);
+console.log(jso)
+for (i = 0; i < obj.length; i++) {
+    d = obj[i];
+    console.log(d.first_name)
+    var user_id=d.user_id;
+    var name='mydiv'+user_id;
+    console.log("Name:");
+    console.log(name);
+    console.log("id:");
+    console.log(user_id);
+    console.log("CREATING OBJECTS");
+    //student_list[user_id]=new student(d.first_name,d.user_id);
+    student_list[user_id] = new Student_(d.first_name, d.user_id);
+    
+    var pdiv = document.createElement('mydiv'+user_id);
+    pdiv.setAttribute("id", 'mydiv'+user_id);
+    
+    var child_div = document.createElement('mydiv'+user_id+'header');
+    child_div.setAttribute("id",'mydiv'+user_id+'header');
+    child_div.innerHTML = d.first_name+" "+d.last_name+" "+d.user_id;      //putting Initials
+    pdiv.appendChild(child_div);
+    board=document.getElementById("board");
+    document.body.insertBefore(pdiv,board); 
+    console.log("Created elements");
+}
+
+console.log("Printing the student object created");
+console.log(student_list);
+
+
+
+
+
+
+//dragElement(document.getElementById("mydiv100"));
+////////
+var student_count=obj.length;
+for (var i=0;i<student_count;i++)
+{
+    console.log("trying to set the position in board")
+
+    d = obj[i];
+    e=document.getElementById("mydiv"+d.user_id);
+    console.log("D=",d);
+    if("x" in d){
+        console.log("Setting position:",d.x);
+        e.style.left = d.x;
+        e.style.top  = d.y;
+    
+        console.log("After setting:")
+        new_pos=e.style.left;
+        console.log(new_pos);
+    }
+    dragElement(document.getElementById("mydiv"+d.user_id));
+    //dragElement(document.getElementById("mydiv1"));
+}
+//dragElement(document.getElementById("board"));
+
+function dragElement(elmnt) {
+    var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+    if (document.getElementById(elmnt.id + "header")!= null) {
+        /* if present, the header is where you move the DIV from:*/
+        document.getElementById(elmnt.id + "header").onmousedown = dragMouseDown;
+    } else {
+        /* otherwise, move the DIV from anywhere inside the DIV:*/
+        elmnt.onmousedown = dragMouseDown;
+    }
+
+    function dragMouseDown(e) {
+        e = e || window.event;
+        e.preventDefault();
+        // get the mouse cursor position at startup:
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        document.onmouseup = closeDragElement;
+        // call a function whenever the cursor moves:
+        document.onmousemove = elementDrag;
+    }
+
+    function elementDrag(e) {
+        e = e || window.event;
+        e.preventDefault();
+        // calculate the new cursor position:
+        pos1 = pos3 - e.clientX;
+        pos2 = pos4 - e.clientY;
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        // set the element's new position:
+        elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+        elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+    }
+
+    function closeDragElement() {
+        /* stop moving when mouse button is released:*/
+        document.onmouseup = null;
+        document.onmousemove = null;
+    }
+  
+}
+
+function showxy(element)
+{
+    console.log(element);
+    var x=element.style.left;
+    var y=element.style.top;
+    console.log("X="+x);
+    console.log("Y="+y);
+}
+
+
+function log_button() {
+    console.log("Clicked on log button");
+    socket.emit('message',lis.toString());
+
+}
+
+$(document).ready(function() {
+    console.log("In jquery");
+   
+    $('#jquerytest').click(function() {
+        console.log("SAVE");
+        var jsonData = {};
+        var js=[];
+    
+        for (var i=0;i<student_count;i++)
+        {
+            d = obj[i];
+            var e = document.getElementById("mydiv"+d.user_id);
+            var x=e.style.left;
+            var y=e.style.top;
+            if(x==""){
+                x="0px";
+                y="0px";
+            }
+   
+            e={"user_id":d.user_id,"first_name":d.first_name,"last_name":d.last_name,"x":x,"y":y};
+            js.push(e);
+            //console.log(d.id,d.first_name,d.last_name,x,y);
+            //showxy(e);
+            //dragElement(document.getElementById("mydiv1"));
+        }
+        console.log("From jquery");
+        console.log(js);
+        $.ajax({
+            url: '/saveLayout',
+            data: JSON.stringify(js, null, '\t'),
+            contentType: 'application/json;charset=UTF-8',
+            dataType: "json",
+            type: 'POST',
+            success: function(response) {
+                console.log(response);
+                document.write(response);
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+    });
+    
+    
+    lis=[];
+    //dat= document.getElementById("classDateTime").value;
+    //window.alert("DATE:"+obj.length);
+    //dat='2018-06-08 8:00:00.000'
+    //dat='2018-11-12 19:15:00.000';
+    //lis.push(dat);
+    console.log("Going to click");
+    //$('#log').click(log_button());
+    $('#log').click(function() {
+    
+        //var today = new Date();
+        //var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+        var date = "2019-4-10";
+    
+        //var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+        var time = "9:45:00"
+        var lis_dat = date+' '+time+".000";
+        lis=[]
+        lis.push(lis_dat);
+        window.alert(lis_dat);
+
+        log_button();
+    });
+});
+
+
+
+</script>
+
+</body>
+</html>

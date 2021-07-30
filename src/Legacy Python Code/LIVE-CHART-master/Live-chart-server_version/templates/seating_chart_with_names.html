@@ -1,0 +1,1548 @@
+<!DOCTYPE html>
+<html>
+<style>
+.div1 {
+    width: 200px;
+    height: 130px;
+    border: 0.2px solid black;
+    style="font-size:10%"
+}
+<!--
+#mydiv2 {
+    position: absolute;
+    z-index: 9;
+    background-color: #f1f1f1;
+    text-align: center;
+    border: 1px solid #d3d3d3;
+}
+
+#mydiv1 {
+    position: absolute;
+    z-index: 9;
+    background-color: #f1f1f1;
+    text-align: center;
+    border: 1px solid #d3d3d3;
+}
+-->
+.poz
+{
+position:absolute;top:20px; right:10px;
+}
+.pos2
+{
+position:absolute;top:50px; left:10px;
+}
+
+.pos3
+{
+position:absolute;top:100px; left:10px;
+}
+[id^="mydiv"] {
+    position: absolute;
+    z-index: 9;
+    background-color: #f1f1f1;
+    text-align: center;
+    font-size: 8px;
+    
+    
+    height: 35px;
+    
+    
+}
+#board {
+    margin: 500px 0;
+    cursor: move;
+    
+}
+<!--
+border: 1px solid #d3d3d3;
+[id$="header"] {
+    padding: 10px;
+    cursor: move;
+    z-index: 10;
+    
+    background-color: #2196F3;
+    color: #fff;
+}
+-->
+[id$="header"] {
+    padding: 10px;
+    cursor: move;
+    z-index: 10;
+    
+    background-color: #91b0c9;
+    color: #fff;
+}
+
+#buttons{
+ top: 191px;
+    left: 420px;
+}
+#mydiv2header {
+    padding: 10px;
+    cursor: move;
+    z-index: 10;
+    background-color: #2196F3;
+    color: #fff;
+}
+
+#mydiv1header {
+    padding: 10px;
+    cursor: move;
+    z-index: 20;
+    background-color: #2196F3;
+    color: #fff;
+}
+</style>
+<body>
+
+<center><h1>Class room seating chart</h1></center>
+
+<center><p>Click and hold the mouse button down while moving the student</p></center>
+<p id="demo"></p>
+<p id='test'> Hello </p>
+
+<br> </br>
+<button id="log">Start Logging</button>
+<!--<button id="log1">Start Logging1</button>-->
+<div id="buttons">
+
+<button id="jquerytest">Save Class layout</button>
+</div>
+<br></br>
+
+<p>Choose the class time:</p>
+Date:<input id="date" type="date" name="class_date" />
+<br>
+Time:<input id="time" type="time" name="class_time" />
+<br>
+<br>
+<p>Color codes:</p>
+
+<div class="div1"><font color="#2196F3"><b>Blue:</b></font> Active </b><br><font color="#008040"><b>Dark green:</b></font> Correctness Streak</b><br><font color="#40ff00"><b>Light Green:</b></font> Learning <br><font color="#990000"> <b>Maroon</b></font>: Struggling <br><font color="#ffd700"><b>Yellow</b></font>:Idle</font>  </div>
+<br>
+
+<!--
+
+<div id="mydiv100">
+  <div id="mydiv2header">Student 2</div>
+</div>
+
+-->
+<!--  
+</div>
+
+<div id="mydiv1">
+  <div id="mydiv1header">Student 1</div>
+  
+</div>
+-->
+
+<div style="text-align: center;">
+   <input type="button" value="Speed Up >>" >
+   <input id="speed" type="text" name="firstname" value="10">
+</div>
+
+
+
+<div  style="text-align: center;">
+   
+<p align="center">BOARD</p>
+<hr width="1000" align="center">
+
+</div>
+
+<div id="board">
+   
+<p align="center" stlye="top:11px;">BOARD</p>
+<hr width="1000" align="center">
+
+</div>
+
+<!--
+<div id="buttons">
+
+<button id="jquerytest">Save Class layout</button>
+</div>
+-->
+
+
+<!--
+<div id="mydiv">
+  <div id="mydivheader">Student 4</div>
+  
+</div>
+<div id="mydiv">
+  <div id="mydivheader">Student 5</div>
+  
+</div>
+<div id="mydiv">
+  <div id="mydivheader">Student 6</div>
+  
+</div>
+<div id="mydiv">
+  <div id="mydivheader">Student 7</div>
+  
+</div>
+<div id="mydiv">
+  <div id="mydivheader">Student 8</div>
+  
+</div>
+<div id="mydiv">
+  <div id="mydivheader">Student 9</div>
+  
+</div>
+<div id="mydiv">
+  <div id="mydivheader">Student 10</div>
+  
+</div>
+-->
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+<script type="text/javascript" charset="utf-8">
+//<script type="text/javascript">
+
+console.log("I am in javascript");
+namespace = '/test';
+var socket = io.connect('http://' + document.domain + ':' + location.port + namespace);
+        $(function() {
+          $('#log1').bind('click', function() {
+            console.log("I GOT CLICKED");
+            $.getJSON('/background_process_test',
+                function(data) {
+              //do nothing
+            });
+            return false;
+          });
+        });
+
+
+        $(document).ready(function(){
+            namespace = '/test'; // change to an empty string to use the global namespace
+            console.log("I am inside function");
+            // the socket.io documentation recommends sending an explicit package upon connection
+            // this is specially important when using the global namespace
+            //var socket = io.connect('http://' + document.domain + ':' + location.port + namespace);
+            
+            socket.on('connect', function(msg) {
+                socket.emit('my event', {data: 'I\'m connected!'});
+            });
+
+            
+            console.log("I am in ready function");
+            socket.on('message', function(msg){
+                
+                console.log(msg.message_sent)
+                var p_list=JSON.parse(msg.message_sent);
+                var res=JSON.parse(msg.message_sent);
+                console.log(res);
+                console.log(typeof res)
+                var count=res.length;
+                /*
+                for (var i=0;i<count-5;i++)
+                {
+                console.log("trying to access")  
+
+                act = res[i];
+                console.log("User:",act.student_id);
+                console.log("Action:",act.action);
+                console.log("Date:",act.date);
+                
+                
+                }*/
+                a=res[0]
+                
+                $('#test').html('<p>' + a.date + '</p>');  
+                
+                var count=res.length;
+                var timer_stud = res[count-5]
+                
+                console.log("The last res-5:",timer_stud);
+                var timer_studentlist = timer_stud.timer;
+                console.log("Calling TIMER STUDENTS LIST:")
+                console.log(timer_studentlist)
+                console.log("Length of timer student list:"+timer_studentlist.length);
+                if(timer_studentlist.length>0)
+                {    
+                    
+                    
+                    //window.alert("timer stud exists"+timer_studentlist+" TYPE:"+typeof(timer_studentlist[0]) + " list:"+typeof(timer_studentlist) );
+                        
+                        
+                
+                }
+                
+                
+                
+                
+                
+                
+                
+                
+                for (var i=0;i<count-5;i++)
+                {
+                console.log("trying to access")  
+
+                act = res[i];
+                console.log("User:",act.student_id);
+                console.log("Action:",act.action);
+                console.log("Date:",act.date);
+                
+                var curr_student=act.student_id;
+                next_date=act.date;
+                //window.alert(curr_student in timer_studentlist);
+                if(timer_studentlist.includes(curr_student))
+                {
+                //window.alert("NO ACTION CHANGE :Timer student:"+curr_student+"timer_students:"+timer_studentlist);
+                //window.alert("True or false:"+(curr_student in timer_studentlist));
+                }
+                else
+                {
+                //window.alert("not timer student"+curr_student+" Timer:"+timer_studentlist[0]+ "Typeof:"+typeof(curr_student));
+                //window.alert("True or false:"+(curr_student in timer_studentlist));
+                if(act.action == "hint")
+                {
+                    console.log("Action is HINT");
+                    //try changing color
+                    id_name='mydiv'+act.student_id+'header';
+                    console.log("Name:"+id_name);
+                    var studentdiv = document.getElementById(id_name);
+                    if (studentdiv == null)
+                    {
+                        console.log("Student not present in this class");
+                    }
+                    else
+                    {
+                        console.log("Student present in this class");
+                        (student_list[act.student_id].actions).push(act.action);
+                        var newDate = new Date();
+                        var datetime =  newDate.getTime();
+                        console.log("Current Time:",datetime);
+                        (student_list[act.student_id].action_time).push(datetime);
+                        console.log("Printing studentlist after adding action");
+                        console.log(student_list);
+                        if(!(act.student_id in timer_studentlist)){
+                        
+                            studentdiv.style.backgroundColor='#2196F3';
+                            console.log("Changed to orange");
+                            
+                            }
+                    }
+                }
+                else if(act.action=="login")
+                {
+                    console.log("Action is login");
+                    //try changing color
+                    id_name='mydiv'+act.student_id+'header';
+                    console.log("Name:"+id_name);
+                    var studentdiv = document.getElementById(id_name);
+                    if (studentdiv == null)
+                    {
+                        console.log("Student not present in this class");
+                    }
+                    else
+                    {
+                        console.log("Student present in this class");
+                        (student_list[act.student_id].actions).push(act.action)
+                        var newDate = new Date();
+                        var datetime =  newDate.getTime();
+                        console.log("Current Time:",datetime);
+                        (student_list[act.student_id].action_time).push(datetime);
+                        
+                        
+                        console.log("Printing studentlist after adding action");
+                        console.log(student_list);
+                        
+                        if(!(act.student_id in timer_studentlist)){
+                        
+                            studentdiv.style.backgroundColor='#2196F3';
+                            
+                            }
+                    }
+                }
+                else if(act.action=="resume")
+                {
+                    console.log("Action is RESUME");
+                    //try changing color
+                    id_name='mydiv'+act.student_id+'header';
+                    console.log("Name:"+id_name);
+                    var studentdiv = document.getElementById(id_name);
+                    if (studentdiv == null)
+                    {
+                        console.log("Student not present in this class");
+                    }
+                    else
+                    {
+                        console.log("Student present in this class");
+                        (student_list[act.student_id].actions).push(act.action)
+                        var newDate = new Date();
+                        var datetime =  newDate.getTime();
+                        console.log("Current Time:",datetime);
+                        (student_list[act.student_id].action_time).push(datetime);
+                        console.log("Printing studentlist after adding action");
+                        console.log(student_list);
+                        //studentdiv.style.backgroundColor='#20D2F1';
+                        if(!(act.student_id in timer_studentlist)){
+                        
+                            studentdiv.style.backgroundColor='#2196F3';
+                        
+                        
+                            console.log("Changed to blue");
+                            
+                            }
+                        
+                        
+                        
+                    }
+                }
+                else if(act.action == "answer")
+                {
+                    console.log("Action is ANSWER");
+                    //try changing color
+                    id_name='mydiv'+act.student_id+'header';
+                    console.log("Name:"+id_name);
+                    var studentdiv = document.getElementById(id_name);
+                    if (studentdiv == null)
+                    {
+                        console.log("Student not present in this class");
+                    }
+                    else
+                    {
+                        console.log("Student present in this class");
+                        (student_list[act.student_id].actions).push(act.action);
+                        var newDate = new Date();
+                        var datetime =  newDate.getTime();
+                        console.log("Current Time:",datetime);
+                        (student_list[act.student_id].action_time).push(datetime);
+                        
+                        console.log("Printing studentlist after adding action");
+                        console.log(student_list);
+                        if(!(act.student_id in timer_studentlist)){
+                        
+                            studentdiv.style.backgroundColor='#2196F3';
+                        
+                            //console.log("Changed to green");
+                            }
+                    }
+                }
+                
+                
+                else if(act.action == "answerhint")
+                {
+                    console.log("Action is ANSWERHINT");
+                    //try changing color
+                    id_name='mydiv'+act.student_id+'header';
+                    console.log("Name:"+id_name);
+                    var studentdiv = document.getElementById(id_name);
+                    if (studentdiv == null)
+                    {
+                        console.log("Student not present in this class");
+                    }
+                    else
+                    {
+                        console.log("Student present in this class");
+                        (student_list[act.student_id].actions).push(act.action);
+                        var newDate = new Date();
+                        var datetime =  newDate.getTime();
+                        console.log("Current Time:",datetime);
+                        (student_list[act.student_id].action_time).push(datetime);
+                        
+                        console.log("Printing studentlist after adding action");
+                        console.log(student_list);
+                        //studentdiv.style.backgroundColor='red';
+                        if(!(act.student_id in timer_studentlist)){
+                        
+                            studentdiv.style.backgroundColor='#2196F3';
+                            //console.log("Changed to red");
+                            }
+                    }
+                }
+                else if(act.action == "end")
+                {
+                    console.log("Action is END");
+                    //try changing color
+                    id_name='mydiv'+act.student_id+'header';
+                    console.log("Name:"+id_name);
+                    var studentdiv = document.getElementById(id_name);
+                    if (studentdiv == null)
+                    {
+                        console.log("Student not present in this class");
+                    }
+                    else
+                    {
+                        console.log("Student present in this class");
+                        (student_list[act.student_id].actions).push(act.action);
+                        var newDate = new Date();
+                        var datetime =  newDate.getTime();
+                        console.log("Current Time:",datetime);
+                        (student_list[act.student_id].action_time).push(datetime);
+                        console.log("Printing studentlist after adding action");
+                        console.log(student_list);
+                        //studentdiv.style.backgroundColor='black';
+                        if(!(act.student_id in timer_studentlist)){
+                        
+                            studentdiv.style.backgroundColor='#2196F3';
+                            //console.log("Changed to black");
+                            }
+                    }
+                }
+                else
+                {
+                 
+                console.log("None of these actions");
+                
+                }
+                }//ending checking of timer students
+                }
+                console.log("Calling the idle students from query log");
+                
+                var idle_stud = res[count-4];
+                console.log("The last res:",idle_stud);
+                var idle_studentlist = idle_stud.idle;
+                console.log("Calling idle student list:")
+                console.log(idle_studentlist)
+                console.log("Length of idle student list:"+idle_studentlist.length);
+                for (j = 0; j < idle_studentlist.length; j++) {
+                    console.log("j="+j);
+                    d = idle_studentlist[j]
+                    console.log("Idle student:"+d)
+                    idle_id='mydiv'+d+'header';
+                    var idle_stud_div = document.getElementById(idle_id);
+                    if(!(act.student_id in timer_studentlist)){
+                        
+                        idle_stud_div.style.backgroundColor='#ffd700';
+                        }
+                    }
+                 
+                //console.log("Calling query_log");
+                
+                
+                console.log("Calling the learning students from query log");
+                
+                var learning_stud = res[count-3];
+                console.log("The last res-3:",learning_stud);
+                var learning_studentlist = learning_stud.learning;
+                console.log("Calling learning student list:")
+                console.log(learning_studentlist)
+                console.log("Length of learning student list:"+learning_studentlist.length);
+                for (j = 0; j < learning_studentlist.length; j++) {
+                    console.log("j="+j);
+                    d = learning_studentlist[j]
+                    console.log("Learning student:"+d)
+                    learning_id='mydiv'+d+'header';
+                    var learning_stud_div = document.getElementById(learning_id);
+                    learning_stud_div.style.backgroundColor='#ADFF2F'//#40ff00';
+                    }
+                 
+                //console.log("Calling query_log");
+                
+                console.log("Calling the bad_learning students from query log");
+                
+                var bad_learning_stud = res[count-2];
+                console.log("The last res-2:",bad_learning_stud);
+                var bad_learning_studentlist = bad_learning_stud.bad_learning;
+                console.log("Calling Bad Learning student list:")
+                console.log(bad_learning_studentlist)
+                console.log("Length of bad learning student list:"+bad_learning_studentlist.length);
+                for (j = 0; j < bad_learning_studentlist.length; j++) {
+                    console.log("j="+j);
+                    d = bad_learning_studentlist[j]
+                    console.log("Bad Learning student:"+d)
+                    bad_learning_id='mydiv'+d+'header';
+                    var bad_learning_stud_div = document.getElementById(bad_learning_id);
+                    bad_learning_stud_div.style.backgroundColor='#990000';
+                    }
+                 
+                //console.log("Calling query_log");
+                
+                console.log("Calling the done learning students from query log");
+                
+                var done_stud = res[count-1];
+                console.log("The last res:",done_stud);
+                var done_studentlist = done_stud.done;
+                console.log("Calling done student list:")
+                console.log(done_studentlist)
+                console.log("Length of done student list:"+done_studentlist.length);
+                for (j = 0; j < done_studentlist.length; j++) {
+                    console.log("j="+j);
+                    d = done_studentlist[j]
+                    console.log("done student:"+d)
+                    done_id='mydiv'+d+'header';
+                    var done_stud_div = document.getElementById(done_id);
+                    done_stud_div.style.backgroundColor='#008040';
+                    }
+                 
+                
+                
+                
+                
+                
+                
+                /*Tadaaaa*/
+                
+                
+                //$('#test').html('<p>' + msg.message_sent + '</p>');             
+            });
+            
+            
+            
+          
+        });
+var student_list={}
+
+
+
+function student(name, id) {
+   this.name = name;
+   this.id =  id;
+   this.actions = [] ;
+   this.action_time = [];
+}
+
+/*
+function check_idle(){
+    
+    var keys = student_list.keys;
+    console.log("Keys:"+keys);
+    
+    for(i in keys) {
+
+        
+  `     var student_obj = student_list[i];
+        var newDate = new Date();
+        var datetime =  newDate.getTime();
+        console.log("Current Time:",datetime);
+        
+        var id=student_obj.student_id;
+        var times= student_obj.action_time;
+        var last_action_time=times[times.length-1]
+        
+        var diff=Math.abs(datetime - last_action_time);
+        
+        console.log("Difference in time:"+diff);
+        
+        
+        if(diff >= 10 minutes)
+        {
+            id_name='mydiv'+id+'header';
+            console.log("Name:"+id);
+            var studentdiv = document.getElementById(id_name);
+            studentdiv.style.backgroundColor='yellow';
+        }    
+        
+        
+        
+        
+        
+        
+
+        
+  
+    
+ 
+  // do something with "key" and "value" variables
+ 
+
+
+        
+
+
+}*/
+
+
+
+//Make the DIV element draggagle:
+
+var jso = {{ jsonData|tojson }};
+console.log(typeof jso);
+var obj = JSON.parse(jso);
+console.log(typeof obj);
+console.log(jso)
+for (i = 0; i < obj.length; i++) {
+    d = obj[i];
+    console.log(d.first_name)
+    var user_id=d.user_id;
+    var name='mydiv'+user_id;
+    console.log("Name:");
+    console.log(name);
+    console.log("id:");
+    console.log(user_id);
+    console.log("CREATING OBJECTS");
+    student_list[user_id]=new student(d.first_name,d.user_id);  
+    
+    var pdiv = document.createElement('mydiv'+user_id);
+    pdiv.setAttribute("id", 'mydiv'+user_id);
+    
+    var child_div = document.createElement('mydiv'+user_id+'header');
+    child_div.setAttribute("id",'mydiv'+user_id+'header');
+    child_div.innerHTML = d.first_name+" "+d.last_name+" "+d.user_id;      //putting Initials
+    pdiv.appendChild(child_div);
+    board=document.getElementById("board");
+    document.body.insertBefore(pdiv,board); 
+    console.log("Created elements");
+    
+    
+    
+}
+
+//console.log("Printing the student object created");
+//console.log(student_list);
+
+
+
+
+
+
+//dragElement(document.getElementById("mydiv100"));
+
+var student_count=obj.length;
+for (var i=0;i<student_count;i++)
+{
+console.log("trying to set the position in board")  
+
+d = obj[i];
+e=document.getElementById("mydiv"+d.user_id);
+console.log("D=",d);
+if("x" in d){
+    console.log("Setting position:",d.x);
+    e.style.left = d.x;
+    e.style.top  = d.y;
+    
+    console.log("After setting:")
+    new_pos=e.style.left;
+    console.log(new_pos);
+}
+dragElement(document.getElementById("mydiv"+d.user_id));
+//dragElement(document.getElementById("mydiv1"));
+}
+//dragElement(document.getElementById("board"));
+function dragElement(elmnt) {
+  var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+  if (document.getElementById(elmnt.id + "header")!= null) {
+    /* if present, the header is where you move the DIV from:*/
+    document.getElementById(elmnt.id + "header").onmousedown = dragMouseDown;
+  } else {
+    /* otherwise, move the DIV from anywhere inside the DIV:*/
+    elmnt.onmousedown = dragMouseDown;
+  }
+
+  function dragMouseDown(e) {
+    e = e || window.event;
+    e.preventDefault();
+    // get the mouse cursor position at startup:
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    document.onmouseup = closeDragElement;
+    // call a function whenever the cursor moves:
+    document.onmousemove = elementDrag;
+  }
+
+  function elementDrag(e) {
+    e = e || window.event;
+    e.preventDefault();
+    // calculate the new cursor position:
+    pos1 = pos3 - e.clientX;
+    pos2 = pos4 - e.clientY;
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    // set the element's new position:
+    elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+    elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+  }
+
+  function closeDragElement() {
+    /* stop moving when mouse button is released:*/
+    document.onmouseup = null;
+    document.onmousemove = null;
+  }
+  
+}
+
+    function showxy(element)
+    {
+    console.log(element);
+    var x=element.style.left;
+    var y=element.style.top;
+    console.log("X="+x);
+    console.log("Y="+y);
+    
+    
+
+    }
+    function save()
+    {
+    console.log("SAVE");
+    var jsonData = {};
+    var js=[];
+    for (var i=0;i<student_count;i++)
+    {
+     d = obj[i];
+    var e = document.getElementById("mydiv"+d.user_id);
+    var x=e.style.left;
+    var y=e.style.top;
+    if(x==""){
+    x="0px";
+    y="0px";
+    }
+   
+    e={"user_id":d.user_id,"first_name":d.first_name,"last_name":d.last_name,"x":x,"y":y};    //changed initials
+    js.push(e);
+    //console.log(d.id,d.first_name,d.last_name,x,y);
+    //showxy(e);
+    //dragElement(document.getElementById("mydiv1"));
+    }
+    console.log(js);
+    
+    }
+    /* Commenting after adding Socket IO method
+    
+    function query_log(date_to_query) {
+        lis=[]
+        lis.push(date_to_query)
+        console.log("Querying log for the next time interval");
+        $.ajax({
+            url: '/class_log',
+            data: JSON.stringify(lis, null, '\t'),
+            contentType: 'application/json;charset=UTF-8',
+            dataType: "json",
+            
+            type: 'POST',
+            success: function(response) {
+                console.log("From success of LOG");
+                //var res = JSON.parse(response)
+                var res=response;
+                console.log(res);
+                console.log(typeof res)
+                var count=res.length;
+                var timer_stud = res[count-5]
+                
+                console.log("The last res-5:",timer_stud);
+                var timer_studentlist = timer_stud.timer;
+                console.log("Calling TIMER STUDENTS LIST:")
+                console.log(timer_studentlist)
+                console.log("Length of timer student list:"+timer_studentlist.length);
+                if(timer_studentlist.length>0)
+                {    
+                    
+                    
+                    //window.alert("timer stud exists"+timer_studentlist+" TYPE:"+typeof(timer_studentlist[0]) + " list:"+typeof(timer_studentlist) );
+                        
+                        
+                
+                }
+                
+                
+                
+                
+                
+                
+                
+                
+                for (var i=0;i<count-5;i++)
+                {
+                console.log("trying to access")  
+
+                act = res[i];
+                console.log("User:",act.student_id);
+                console.log("Action:",act.action);
+                console.log("Date:",act.date);
+                
+                var curr_student=act.student_id;
+                next_date=act.date;
+                //window.alert(curr_student in timer_studentlist);
+                if(timer_studentlist.includes(curr_student))
+                {
+                //window.alert("NO ACTION CHANGE :Timer student:"+curr_student+"timer_students:"+timer_studentlist);
+                //window.alert("True or false:"+(curr_student in timer_studentlist));
+                }
+                else
+                {
+                //window.alert("not timer student"+curr_student+" Timer:"+timer_studentlist[0]+ "Typeof:"+typeof(curr_student));
+                //window.alert("True or false:"+(curr_student in timer_studentlist));
+                if(act.action == "hint")
+                {
+                    console.log("Action is HINT");
+                    //try changing color
+                    id_name='mydiv'+act.student_id+'header';
+                    console.log("Name:"+id_name);
+                    var studentdiv = document.getElementById(id_name);
+                    if (studentdiv == null)
+                    {
+                        console.log("Student not present in this class");
+                    }
+                    else
+                    {
+                        console.log("Student present in this class");
+                        (student_list[act.student_id].actions).push(act.action);
+                        var newDate = new Date();
+                        var datetime =  newDate.getTime();
+                        console.log("Current Time:",datetime);
+                        (student_list[act.student_id].action_time).push(datetime);
+                        console.log("Printing studentlist after adding action");
+                        console.log(student_list);
+                        if(!(act.student_id in timer_studentlist)){
+                        
+                            studentdiv.style.backgroundColor='#2196F3';
+                            console.log("Changed to orange");
+                            
+                            }
+                    }
+                }
+                else if(act.action=="login")
+                {
+                    console.log("Action is login");
+                    //try changing color
+                    id_name='mydiv'+act.student_id+'header';
+                    console.log("Name:"+id_name);
+                    var studentdiv = document.getElementById(id_name);
+                    if (studentdiv == null)
+                    {
+                        console.log("Student not present in this class");
+                    }
+                    else
+                    {
+                        console.log("Student present in this class");
+                        (student_list[act.student_id].actions).push(act.action)
+                        var newDate = new Date();
+                        var datetime =  newDate.getTime();
+                        console.log("Current Time:",datetime);
+                        (student_list[act.student_id].action_time).push(datetime);
+                        
+                        
+                        console.log("Printing studentlist after adding action");
+                        console.log(student_list);
+                        
+                        if(!(act.student_id in timer_studentlist)){
+                        
+                            studentdiv.style.backgroundColor='#2196F3';
+                            
+                            }
+                    }
+                }
+                else if(act.action=="resume")
+                {
+                    console.log("Action is RESUME");
+                    //try changing color
+                    id_name='mydiv'+act.student_id+'header';
+                    console.log("Name:"+id_name);
+                    var studentdiv = document.getElementById(id_name);
+                    if (studentdiv == null)
+                    {
+                        console.log("Student not present in this class");
+                    }
+                    else
+                    {
+                        console.log("Student present in this class");
+                        (student_list[act.student_id].actions).push(act.action)
+                        var newDate = new Date();
+                        var datetime =  newDate.getTime();
+                        console.log("Current Time:",datetime);
+                        (student_list[act.student_id].action_time).push(datetime);
+                        console.log("Printing studentlist after adding action");
+                        console.log(student_list);
+                        //studentdiv.style.backgroundColor='#20D2F1';
+                        if(!(act.student_id in timer_studentlist)){
+                        
+                            studentdiv.style.backgroundColor='#2196F3';
+                        
+                        
+                            console.log("Changed to blue");
+                            
+                            }
+                        
+                        
+                        
+                    }
+                }
+                else if(act.action == "answer")
+                {
+                    console.log("Action is ANSWER");
+                    //try changing color
+                    id_name='mydiv'+act.student_id+'header';
+                    console.log("Name:"+id_name);
+                    var studentdiv = document.getElementById(id_name);
+                    if (studentdiv == null)
+                    {
+                        console.log("Student not present in this class");
+                    }
+                    else
+                    {
+                        console.log("Student present in this class");
+                        (student_list[act.student_id].actions).push(act.action);
+                        var newDate = new Date();
+                        var datetime =  newDate.getTime();
+                        console.log("Current Time:",datetime);
+                        (student_list[act.student_id].action_time).push(datetime);
+                        
+                        console.log("Printing studentlist after adding action");
+                        console.log(student_list);
+                        if(!(act.student_id in timer_studentlist)){
+                        
+                            studentdiv.style.backgroundColor='#2196F3';
+                        
+                            console.log("Changed to green");
+                            }
+                    }
+                }
+                
+                
+                else if(act.action == "answerhint")
+                {
+                    console.log("Action is ANSWERHINT");
+                    //try changing color
+                    id_name='mydiv'+act.student_id+'header';
+                    console.log("Name:"+id_name);
+                    var studentdiv = document.getElementById(id_name);
+                    if (studentdiv == null)
+                    {
+                        console.log("Student not present in this class");
+                    }
+                    else
+                    {
+                        console.log("Student present in this class");
+                        (student_list[act.student_id].actions).push(act.action);
+                        var newDate = new Date();
+                        var datetime =  newDate.getTime();
+                        console.log("Current Time:",datetime);
+                        (student_list[act.student_id].action_time).push(datetime);
+                        
+                        console.log("Printing studentlist after adding action");
+                        console.log(student_list);
+                        //studentdiv.style.backgroundColor='red';
+                        if(!(act.student_id in timer_studentlist)){
+                        
+                            studentdiv.style.backgroundColor='#2196F3';
+                            console.log("Changed to red");
+                            }
+                    }
+                }
+                else if(act.action == "end")
+                {
+                    console.log("Action is END");
+                    //try changing color
+                    id_name='mydiv'+act.student_id+'header';
+                    console.log("Name:"+id_name);
+                    var studentdiv = document.getElementById(id_name);
+                    if (studentdiv == null)
+                    {
+                        console.log("Student not present in this class");
+                    }
+                    else
+                    {
+                        console.log("Student present in this class");
+                        (student_list[act.student_id].actions).push(act.action);
+                        var newDate = new Date();
+                        var datetime =  newDate.getTime();
+                        console.log("Current Time:",datetime);
+                        (student_list[act.student_id].action_time).push(datetime);
+                        console.log("Printing studentlist after adding action");
+                        console.log(student_list);
+                        //studentdiv.style.backgroundColor='black';
+                        if(!(act.student_id in timer_studentlist)){
+                        
+                            studentdiv.style.backgroundColor='#2196F3';
+                            console.log("Changed to black");
+                            }
+                    }
+                }
+                else
+                {
+                 
+                console.log("None of these actions");
+                
+                }
+                }//ending checking of timer students
+                }
+                console.log("Calling the idle students from query log");
+                
+                var idle_stud = res[count-4];
+                console.log("The last res:",idle_stud);
+                var idle_studentlist = idle_stud.idle;
+                console.log("Calling idle student list:")
+                console.log(idle_studentlist)
+                console.log("Length of idle student list:"+idle_studentlist.length);
+                for (j = 0; j < idle_studentlist.length; j++) {
+                    console.log("j="+j);
+                    d = idle_studentlist[j]
+                    console.log("Idle student:"+d)
+                    idle_id='mydiv'+d+'header';
+                    var idle_stud_div = document.getElementById(idle_id);
+                    if(!(act.student_id in timer_studentlist)){
+                        
+                        idle_stud_div.style.backgroundColor='#ffd700';
+                        }
+                    }
+                 
+                //console.log("Calling query_log");
+                
+                
+                console.log("Calling the learning students from query log");
+                
+                var learning_stud = res[count-3];
+                console.log("The last res-3:",learning_stud);
+                var learning_studentlist = learning_stud.learning;
+                console.log("Calling learning student list:")
+                console.log(learning_studentlist)
+                console.log("Length of learning student list:"+learning_studentlist.length);
+                for (j = 0; j < learning_studentlist.length; j++) {
+                    console.log("j="+j);
+                    d = learning_studentlist[j]
+                    console.log("Learning student:"+d)
+                    learning_id='mydiv'+d+'header';
+                    var learning_stud_div = document.getElementById(learning_id);
+                    learning_stud_div.style.backgroundColor='#ADFF2F'//#40ff00';
+                    }
+                 
+                //console.log("Calling query_log");
+                
+                console.log("Calling the bad_learning students from query log");
+                
+                var bad_learning_stud = res[count-2];
+                console.log("The last res-2:",bad_learning_stud);
+                var bad_learning_studentlist = bad_learning_stud.bad_learning;
+                console.log("Calling Bad Learning student list:")
+                console.log(bad_learning_studentlist)
+                console.log("Length of bad learning student list:"+bad_learning_studentlist.length);
+                for (j = 0; j < bad_learning_studentlist.length; j++) {
+                    console.log("j="+j);
+                    d = bad_learning_studentlist[j]
+                    console.log("Bad Learning student:"+d)
+                    bad_learning_id='mydiv'+d+'header';
+                    var bad_learning_stud_div = document.getElementById(bad_learning_id);
+                    bad_learning_stud_div.style.backgroundColor='#990000';
+                    }
+                 
+                //console.log("Calling query_log");
+                
+                console.log("Calling the done learning students from query log");
+                
+                var done_stud = res[count-1];
+                console.log("The last res:",done_stud);
+                var done_studentlist = done_stud.done;
+                console.log("Calling done student list:")
+                console.log(done_studentlist)
+                console.log("Length of done student list:"+done_studentlist.length);
+                for (j = 0; j < done_studentlist.length; j++) {
+                    console.log("j="+j);
+                    d = done_studentlist[j]
+                    console.log("done student:"+d)
+                    done_id='mydiv'+d+'header';
+                    var done_stud_div = document.getElementById(done_id);
+                    done_stud_div.style.backgroundColor='#008040';
+                    }
+                 
+                console.log("Calling query_log");
+                
+                
+                
+                query_log(next_date);
+                
+                
+                
+            
+            
+            
+            /*
+            
+            var idle_stud = res[count-1];
+            console.log("The last res:",idle_stud);
+            var idle_studentlist = idle_stud.idle;
+            console.log("Calling idle student list:")
+            console.log(idle_studentlist)
+            for (j = 0; j < idle_studentlist.length; i++) {
+                d = idle_studentlist[j]
+                console.log("Idle student:"+d)
+                idle_id='mydiv'+act.student_id+'header';
+                var studentdiv = document.getElementById(id_name);
+                studentdiv.style.backgroundColor='yellow';
+                    
+                
+            }
+            
+            */
+            
+            /*
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+    } */
+    
+    function log_button() {
+        console.log("Clicked on log button");
+        socket.emit('message',[lis[0].toString(),lis[1]]);
+        
+        /*
+        $.ajax({
+            url: '/class_log',
+            data: JSON.stringify(lis, null, '\t'),
+            contentType: 'application/json;charset=UTF-8',
+            dataType: "json",
+            
+            type: 'POST',
+            success:function(response){
+            //do nothing
+            },
+            /*
+            success: function(response) {
+                var next_date;
+                console.log("From success of LOG");
+                //var res = JSON.parse(response)
+                var res=response;
+                console.log(res);
+                console.log(typeof res)
+                var count=res.length;
+                for (var i=0;i<count-4;i++)
+                {
+                console.log("trying to access")  
+
+                act = res[i];
+                console.log("User:",act.student_id);
+                console.log("Action:",act.action);
+                console.log("Date:",act.date);
+                next_date=act.date;
+                if(act.action == "hint")
+                {
+                    console.log("Action is HINT");
+                    //try changing color
+                    id_name='mydiv'+act.student_id+'header';
+                    console.log("Name:"+id_name);
+                    var studentdiv = document.getElementById(id_name);
+                    if (studentdiv == null)
+                    {
+                        console.log("Student not present in this class");
+                    }
+                    else
+                    {
+                        console.log("Student present in this class");
+                        (student_list[act.student_id].actions).push(act.action)
+                        var newDate = new Date();
+                        var datetime =  newDate.getTime();
+                        console.log("Current Time:",datetime);
+                        (student_list[act.student_id].action_time).push(datetime);
+                        console.log("Printing studentlist after adding action");
+                        
+                        console.log(student_list);
+                        studentdiv.style.backgroundColor='orange';
+                        console.log("Changed to orange");
+                    }
+                }
+                else if(act.action=="login")
+                {
+                    console.log("Action is login");
+                    //try changing color
+                    id_name='mydiv'+act.student_id+'header';
+                    console.log("Name:"+id_name);
+                    var studentdiv = document.getElementById(id_name);
+                    if (studentdiv == null)
+                    {
+                        console.log("Student not present in this class");
+                    }
+                    else
+                    {
+                        console.log("Student present in this class");
+                        studentdiv.style.backgroundColor='#2196F3';
+                        (student_list[act.student_id].actions).push(act.action)
+                        var newDate = new Date();
+                        var datetime =  newDate.getTime();
+                        console.log("Current Time:",datetime);
+                        (student_list[act.student_id].action_time).push(datetime);
+                        console.log("Printing studentlist after adding action");
+                        console.log(student_list);
+                    }
+                }
+                else if(act.action=="resume")
+                {
+                    console.log("Action is RESUME");
+                    //try changing color
+                    id_name='mydiv'+act.student_id+'header';
+                    console.log("Name:"+id_name);
+                    var studentdiv = document.getElementById(id_name);
+                    if (studentdiv == null)
+                    {
+                        console.log("Student not present in this class");
+                    }
+                    else
+                    {
+                        console.log("Student present in this class");
+                        studentdiv.style.backgroundColor='#2196F3';
+                        console.log("Changed to blue");
+                        (student_list[act.student_id].actions).push(act.action);
+                        var newDate = new Date();
+                        var datetime =  newDate.getTime();
+                        console.log("Current Time:",datetime);
+                        (student_list[act.student_id].action_time).push(datetime);
+                        console.log("Printing studentlist after adding action");
+                        console.log(student_list);
+                    }
+                }
+                else if(act.action == "answer")
+                {
+                    console.log("Action is ANSWER");
+                    //try changing color
+                    id_name='mydiv'+act.student_id+'header';
+                    console.log("Name:"+id_name);
+                    var studentdiv = document.getElementById(id_name);
+                    if (studentdiv == null)
+                    {
+                        console.log("Student not present in this class");
+                    }
+                    else
+                    {
+                        console.log("Student present in this class");
+                        studentdiv.style.backgroundColor='green';
+                        console.log("Changed to green");
+                        (student_list[act.student_id].actions).push(act.action);
+                        var newDate = new Date();
+                        var datetime =  newDate.getTime();
+                        console.log("Current Time:",datetime);
+                        (student_list[act.student_id].action_time).push(datetime);
+                        console.log("Printing studentlist after adding action");
+                        console.log(student_list);
+                    }
+                }
+                
+                
+                else if(act.action == "answerhint")
+                {
+                    console.log("Action is ANSWERHINT");
+                    //try changing color
+                    id_name='mydiv'+act.student_id+'header';
+                    console.log("Name:"+id_name);
+                    var studentdiv = document.getElementById(id_name);
+                    if (studentdiv == null)
+                    {
+                        console.log("Student not present in this class");
+                    }
+                    else
+                    {
+                        console.log("Student present in this class");
+                        //studentdiv.style.backgroundColor='red';
+                        studentdiv.style.backgroundColor='#2196F3';
+                        (student_list[act.student_id].actions).push(act.action);
+                        var newDate = new Date();
+                        var datetime =  newDate.getTime();
+                        (student_list[act.student_id].action_time).push(datetime);
+                        console.log("Current Time:",datetime);
+                        
+                        console.log("Printing studentlist after adding action");
+                        console.log(student_list);
+                        console.log("Changed to red");
+                    }
+                }
+                else if(act.action == "end")
+                {
+                    console.log("Action is END");
+                    //try changing color
+                    id_name='mydiv'+act.student_id+'header';
+                    console.log("Name:"+id_name);
+                    var studentdiv = document.getElementById(id_name);
+                    if (studentdiv == null)
+                    {
+                        console.log("Student not present in this class");
+                    }
+                    else
+                    {
+                        console.log("Student present in this class");
+                        //studentdiv.style.backgroundColor='black';
+                        studentdiv.style.backgroundColor='#2196F3';
+                        (student_list[act.student_id].actions).push(act.action);
+                        var newDate = new Date();
+                        var datetime =  newDate.getTime();
+                        console.log("Current Time:",datetime);
+                        (student_list[act.student_id].action_time).push(datetime);
+                        console.log("Printing studentlist after adding action");
+                        console.log(student_list);
+                        console.log("Changed to black");
+                    }
+                }
+                else
+                {
+                 
+                console.log("None of these actions");
+                
+                }
+                
+                
+                console.log("Calling idle students before querylog");
+                
+                
+                var idle_stud = res[count-4];
+                console.log("The last res:",idle_stud);
+                var idle_studentlist = idle_stud.idle;
+                console.log("Calling idle student list:")
+                console.log(idle_studentlist)
+                console.log("Length of idle student list:"+idle_studentlist.length);
+                for (j = 0; j < idle_studentlist.length; j++) {
+                    console.log("j="+j);
+                    d = idle_studentlist[j]
+                    console.log("Idle student:"+d)
+                    idle_id='mydiv'+d+'header';
+                    var idle_stud_div = document.getElementById(idle_id);
+                    idle_stud_div.style.backgroundColor='#ffd700';
+                    }
+                
+                
+                
+                
+               
+                
+                console.log("Calling query_log");
+                query_log(next_date);
+                
+                
+                
+                
+                
+            }
+            */
+            
+            /*
+            
+            var idle_stud = res[count-1];
+            console.log("The last res:",idle_stud);
+            var idle_studentlist = idle_stud.idle;
+            console.log("Calling idle student list:")
+            console.log(idle_studentlist)
+            for (j = 0; j < idle_studentlist.length; i++) {
+                d = idle_studentlist[j]
+                console.log("Idle student:"+d)
+                idle_id='mydiv'+act.student_id+'header';
+                var studentdiv = document.getElementById(id_name);
+                studentdiv.style.backgroundColor='yellow';
+                    
+                
+            
+            */
+            /*
+            
+            
+            
+            
+            
+            error: function(error) {
+                console.log(error);
+            }
+        });  */     
+    }
+    
+   $(document).ready(function() {
+   console.log("In jquery");
+   
+    $('#jquerytest').click(function() {
+        console.log("SAVE");
+    var jsonData = {};
+    var js=[];
+    
+    for (var i=0;i<student_count;i++)
+    {
+    d = obj[i];
+    var e = document.getElementById("mydiv"+d.user_id);
+    var x=e.style.left;
+    var y=e.style.top;
+    if(x==""){
+    x="0px";
+    y="0px";
+    }
+   
+    e={"user_id":d.user_id,"first_name":d.first_name,"last_name":d.last_name,"x":x,"y":y};
+    js.push(e);
+    //console.log(d.id,d.first_name,d.last_name,x,y);
+    //showxy(e);
+    //dragElement(document.getElementById("mydiv1"));
+    }
+    console.log("From jquery");
+    
+    //Calling to Save Layout method in script
+    console.log(js);
+        $.ajax({
+            url: '/saveLayout',
+            data: JSON.stringify(js, null, '\t'),
+            contentType: 'application/json;charset=UTF-8',
+            dataType: "json",
+            type: 'POST',
+            success: function(response) {
+                console.log(response);
+                document.write(response);
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+    });
+    
+    
+    lis=[];
+    //dat= document.getElementById("classDateTime").value;
+    //window.alert("DATE:"+obj.length);
+    //dat='2018-06-08 8:00:00.000'
+    //dat='2018-11-12 19:15:00.000'; 2018-8-3 11:12:40
+    //lis.push(dat);
+    console.log("Going to click");
+    //$('#log').click(log_button());
+    $('#log').click(function() {
+   
+    
+    //dat= document.getElementById("classDateTime").value;
+    dat2=document.getElementById("date").value;
+    time2=document.getElementById("time").value;
+    var speedValue = document.getElementById('speed').value;
+    var speed = parseInt(speedValue);
+    //window.alert("DATE:"+dat);
+    //window.alert("date:"+dat2+" time:"+time2);
+    lis_dat=dat2+" "+time2+":00.000"+" Speed :"+speed;
+    window.alert(lis_dat);
+    
+    
+    lis=[];
+    lis.push(lis_dat);
+    lis.push(speed);
+    console.log("List:"+lis);
+    console.log("click log function");
+    log_button();
+    });
+    
+    
+        
+});
+
+   
+    
+
+    
+    /*
+    var proc = new Process {
+    StartInfo = new ProcessStartInfo {
+        FileName = "C:\Users\aashvini\AppData\Local\Continuum\anaconda3\python.exe",
+        Arguments = "C:\Users\aashvini\LIVE-CHART\demo.py",
+        UseShellExecute = false,
+        RedirectStandardOutput = true,
+        CreateNoWindow = true
+    }
+    };
+    
+    
+    proc.Start();
+    while (!proc.StandardOutput.EndOfStream) {
+        string line = proc.StandardOutput.ReadLine();
+        // do something with line
+        textarea.value  = line;
+    }*/
+    
+    
+   
+    
+    
+    
+    
+   
+
+</script>
+
+</body>
+</html>

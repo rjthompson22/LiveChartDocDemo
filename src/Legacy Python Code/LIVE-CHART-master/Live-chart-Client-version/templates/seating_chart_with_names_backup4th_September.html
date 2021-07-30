@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html>
+<style>
+
+<!--
+#mydiv2 {
+    position: absolute;
+    z-index: 9;
+    background-color: #f1f1f1;
+    text-align: center;
+    border: 1px solid #d3d3d3;
+}
+
+#mydiv1 {
+    position: absolute;
+    z-index: 9;
+    background-color: #f1f1f1;
+    text-align: center;
+    border: 1px solid #d3d3d3;
+}
+-->
+.poz
+{
+position:absolute;top:20px; right:10px;
+}
+.pos2
+{
+position:absolute;top:50px; left:10px;
+}
+
+.pos3
+{
+position:absolute;top:100px; left:10px;
+}
+[id^="mydiv"] {
+    position: absolute;
+    z-index: 9;
+    background-color: #f1f1f1;
+    text-align: center;
+    font-size: 8px;
+    
+    border: 1px solid #d3d3d3;
+}
+#board {
+    margin: 500px 0;
+    cursor: move;
+    
+}
+[id$="header"] {
+    padding: 10px;
+    cursor: move;
+    z-index: 10;
+    
+    background-color: #2196F3;
+    color: #fff;
+}
+#buttons{
+ top: 191px;
+    left: 420px;
+}
+#mydiv2header {
+    padding: 10px;
+    cursor: move;
+    z-index: 10;
+    background-color: #2196F3;
+    color: #fff;
+}
+
+#mydiv1header {
+    padding: 10px;
+    cursor: move;
+    z-index: 20;
+    background-color: #2196F3;
+    color: #fff;
+}
+</style>
+<body>
+
+<center><h1>Class room seating chart</h1></center>
+
+<center><p>Click and hold the mouse button down while moving the student</p></center>
+<p id="demo">Hiiii</p>
+
+
+
+
+<!--
+
+<div id="mydiv100">
+  <div id="mydiv2header">Student 2</div>
+</div>
+
+-->
+<!--  
+</div>
+
+<div id="mydiv1">
+  <div id="mydiv1header">Student 1</div>
+  
+</div>
+-->
+
+<div id="board">
+   
+<p align="center" stlye="top:11px;">BOARD</p>
+<hr width="1000" align="center">
+
+</div>
+<div id="buttons">
+
+<button id="jquerytest">Save Class layout</button>
+</div>
+
+
+
+<!--
+<div id="mydiv">
+  <div id="mydivheader">Student 4</div>
+  
+</div>
+<div id="mydiv">
+  <div id="mydivheader">Student 5</div>
+  
+</div>
+<div id="mydiv">
+  <div id="mydivheader">Student 6</div>
+  
+</div>
+<div id="mydiv">
+  <div id="mydivheader">Student 7</div>
+  
+</div>
+<div id="mydiv">
+  <div id="mydivheader">Student 8</div>
+  
+</div>
+<div id="mydiv">
+  <div id="mydivheader">Student 9</div>
+  
+</div>
+<div id="mydiv">
+  <div id="mydivheader">Student 10</div>
+  
+</div>
+-->
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+<script type="text/javascript">
+
+
+//Make the DIV element draggagle:
+
+var jso = {{ jsonData|tojson }};
+console.log(typeof jso);
+var obj = JSON.parse(jso);
+console.log(typeof obj);
+console.log(jso)
+for (i = 0; i < obj.length; i++) {
+    d = obj[i];
+    console.log(d.first_name)
+    var user_id=d.user_id;
+    var name='mydiv'+user_id;
+    console.log("Name:");
+    console.log(name);
+    console.log("id:");
+    console.log(user_id);
+    var pdiv = document.createElement('mydiv'+user_id);
+    pdiv.setAttribute("id", 'mydiv'+user_id);
+    
+    var child_div = document.createElement('mydiv'+i+'header');
+    child_div.setAttribute("id",'mydiv'+user_id+'header');
+    child_div.innerHTML = d.first_name+" "+d.last_name+" "+d.user_id;
+    pdiv.appendChild(child_div);
+    board=document.getElementById("board");
+    document.body.insertBefore(pdiv,board); 
+    console.log("Created elements");
+    
+    
+    
+}
+
+
+
+
+
+
+
+//dragElement(document.getElementById("mydiv100"));
+////////
+var student_count=obj.length;
+for (var i=0;i<student_count;i++)
+{
+console.log("trying to set the position in board")  
+e=document.getElementById("mydiv"+i);
+d = obj[i]
+console.log("D=",d);
+if("x" in d){
+    console.log("Setting position:",d.x);
+    e.style.left = d.x;
+    e.style.top  = d.y;
+    
+    console.log("After setting:")
+    new_pos=e.style.left;
+    console.log(new_pos);
+}
+dragElement(document.getElementById("mydiv"+i));
+//dragElement(document.getElementById("mydiv1"));
+}
+//dragElement(document.getElementById("board"));
+function dragElement(elmnt) {
+  var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+  if (document.getElementById(elmnt.id + "header")!= null) {
+    /* if present, the header is where you move the DIV from:*/
+    document.getElementById(elmnt.id + "header").onmousedown = dragMouseDown;
+  } else {
+    /* otherwise, move the DIV from anywhere inside the DIV:*/
+    elmnt.onmousedown = dragMouseDown;
+  }
+
+  function dragMouseDown(e) {
+    e = e || window.event;
+    e.preventDefault();
+    // get the mouse cursor position at startup:
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    document.onmouseup = closeDragElement;
+    // call a function whenever the cursor moves:
+    document.onmousemove = elementDrag;
+  }
+
+  function elementDrag(e) {
+    e = e || window.event;
+    e.preventDefault();
+    // calculate the new cursor position:
+    pos1 = pos3 - e.clientX;
+    pos2 = pos4 - e.clientY;
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    // set the element's new position:
+    elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+    elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+  }
+
+  function closeDragElement() {
+    /* stop moving when mouse button is released:*/
+    document.onmouseup = null;
+    document.onmousemove = null;
+  }
+  
+}
+
+    function showxy(element)
+    {
+    console.log(element);
+    var x=element.style.left;
+    var y=element.style.top;
+    console.log("X="+x);
+    console.log("Y="+y);
+    
+    
+
+    }
+    function save()
+    {
+    console.log("SAVE");
+    var jsonData = {};
+    var js=[];
+    for (var i=0;i<student_count;i++)
+    {
+    
+    var e = document.getElementById("mydiv"+i);
+    var x=e.style.left;
+    var y=e.style.top;
+    if(x==""){
+    x="0px";
+    y="0px";
+    }
+    d = obj[i];
+    e={"user_id":d.user_id,"first_name":d.first_name,"last_name":d.last_name,"x":x,"y":y};
+    js.push(e);
+    //console.log(d.id,d.first_name,d.last_name,x,y);
+    //showxy(e);
+    //dragElement(document.getElementById("mydiv1"));
+    }
+    console.log(js);
+    
+    }
+    
+   $(document).ready(function() {
+   console.log("In jquery");
+   
+    $('#jquerytest').click(function() {
+        console.log("SAVE");
+    var jsonData = {};
+    var js=[];
+    for (var i=0;i<student_count;i++)
+    {
+    
+    var e = document.getElementById("mydiv"+i);
+    var x=e.style.left;
+    var y=e.style.top;
+    if(x==""){
+    x="0px";
+    y="0px";
+    }
+    d = obj[i];
+    e={"user_id":d.user_id,"first_name":d.first_name,"last_name":d.last_name,"x":x,"y":y};
+    js.push(e);
+    //console.log(d.id,d.first_name,d.last_name,x,y);
+    //showxy(e);
+    //dragElement(document.getElementById("mydiv1"));
+    }
+    console.log("From jquery");
+    console.log(js);
+        $.ajax({
+            url: '/saveLayout',
+            data: JSON.stringify(js, null, '\t'),
+            contentType: 'application/json;charset=UTF-8',
+            dataType: "json",
+            type: 'POST',
+            success: function(response) {
+                console.log(response);
+                document.write(response);
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+    });
+    
+    
+        
+});
+    
+    /*
+    var proc = new Process {
+    StartInfo = new ProcessStartInfo {
+        FileName = "C:\Users\aashvini\AppData\Local\Continuum\anaconda3\python.exe",
+        Arguments = "C:\Users\aashvini\LIVE-CHART\demo.py",
+        UseShellExecute = false,
+        RedirectStandardOutput = true,
+        CreateNoWindow = true
+    }
+    };
+    
+    
+    proc.Start();
+    while (!proc.StandardOutput.EndOfStream) {
+        string line = proc.StandardOutput.ReadLine();
+        // do something with line
+        textarea.value  = line;
+    }*/
+   
+    
+    
+    
+    
+   
+
+</script>
+
+</body>
+</html>

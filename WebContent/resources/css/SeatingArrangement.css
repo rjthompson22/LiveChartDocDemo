@@ -1,0 +1,352 @@
+.seating-arrangement-root-container {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(150, 150, 150, 0.70);
+    z-index: 800;
+    display: none;
+}
+
+.seating-arrangement-root-container, .seating-arrangement-root-container * {
+	-webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none;
+            font-family: poppin-medium;
+}
+
+
+.seating-arrangement-container {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-around;
+    position: absolute;
+    width: 80%;
+    height: 80%;
+    top: 50%;
+    left: 10%;
+    background-color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0px 0px 5px 2px #555;
+    padding: 0.5rem 2rem;
+    max-height: 1200px;
+    transform: translateY(-50%);
+}
+
+.seating-grid-container {
+    display: flex;
+    flex-flow: column nowrap;
+    height: 100%;
+    overflow: hidden;
+    flex-grow: 1;
+    /* border-right: 2px solid aliceblue; */
+}
+
+.seating-content {
+	display: flex;
+    flex-flow: row nowrap;
+    overflow: auto;
+    padding: 10px 0px 5px 0px;
+    flex-grow: 1;
+}
+
+.seating-arrangement {
+    display: flex;
+    flex-flow: column nowrap;
+    flex-grow: 1;
+    justify-content: flex-start;
+    margin: 3px;
+    overflow: auto;
+}
+
+.seating-arrangement-controller,
+.row-column-controllers {
+    display: flex;
+    flex-flow: row wrap;
+    background-color: #fff;
+    justify-content: flex-start;
+}
+
+.seating-arrangement-name-input {
+	/* margin: 10px 0px 10px 0px;
+	padding: 0px 5px 0px 5px; */
+	font-size: 1.56rem;
+	text-align: center;
+	color: #444;
+	border: unset;
+	border-bottom: 1px solid #666;
+    font-family: poppin-regular;
+    align-self: center;
+}
+
+.seating-arrangement-name-input:focus {
+	outline: none;
+	border-bottom: 2px solid #444;	
+}
+
+.seating-arrangement-name-input::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: #aaa;
+  opacity: 1; /* Firefox */
+}
+
+.seating-arrangement-name-input:-ms-input-placeholder { /* Internet Explorer 10-11 */
+  color: #aaa;
+}
+
+.seating-arrangement-name-input::-ms-input-placeholder { /* Microsoft Edge */
+  color: #aaa;
+}
+
+
+.seating-controller-btn {
+    margin: 10px 10px 10px 0px;
+}
+
+.preexistinglist-container {
+	flex-grow: 1;
+	z-index: 1001;
+	margin: 10px 0;
+}
+
+.save-seating-chart,
+.cancel-seating-chart {
+    font-size: 1.25rem;
+    margin: 10px 0px 10px 10px;
+}
+
+.delete-seating-chart {
+	font-size: 2em!important;
+	align-self: center;
+	color: #dc3545;
+	cursor: pointer;
+	padding-left: 8px;
+}
+
+.seating-arrangement-row {
+    display: flex;
+    flex-flow: row nowrap;
+    background-color: #ffffff;
+    flex-grow: 1;
+    max-height: 14%;
+}
+
+.seating-arrangement>.seating-arrangement-row {
+    border-left: 1px solid #999;
+    border-right: 1px solid #999;
+}
+
+.seating-arrangement>.seating-arrangement-row:first-of-type {
+    border-top: 1px solid #999;
+}
+
+.seating-arrangement>.seating-arrangement-row:last-of-type {
+    border-bottom: 1px solid #999;
+}
+
+.seating-cell {
+    flex-grow: 1;
+    border: 1px solid #999;
+    /* margin: 5px; */
+    z-index: 1000;
+    text-align: center;
+    background-color: #ddd;
+    overflow: hidden;
+}
+
+.seating-cell>p {
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 0.8rem;
+}
+
+.hasStudent {
+    background-color: #fff;
+}
+
+.hasStudent,
+.hasStudent p {
+    cursor: grab;
+}
+
+.hasStudent:active,
+.hasStudent p:active {
+    cursor: grabbing;
+}
+
+.seating-title,
+.student-list-title {
+    color: #333;
+    font-size: 1.6rem;
+    padding: 8px 0;
+    margin: 0;
+}
+
+.seating-title {
+	text-align: left;
+}
+
+.student-list-container {
+    display: flex;
+    flex-flow: column nowrap;
+    height: 100%;
+    justify-content: flex-start;
+    /* background-color: aliceblue; */
+    min-width: 200px;
+    width: 25%;
+    max-width: 325px;
+    position: relative;
+    /* border-left: 1px solid #007bff; */
+    /* box-shadow: 0px 0px 2px 1px #007bff; */
+}
+
+.student-list-container>.seating-title {
+    color: #444;
+    cursor: default;
+    font-size: 1.2rem;
+    padding: 8px 20px;
+    font-family: poppin-medium;
+    
+}
+
+.student-list {
+    display: flex;
+    flex-flow: column nowrap;
+    min-width: 150px;
+    justify-content: flex-start;
+    overflow: auto;
+    flex-grow: 1;
+    padding: 0px 20px 8px 20px;
+}
+
+.student-list:last-child {
+	margin-bottom: 0px;
+}
+
+.student-name {
+    font-size: 0.8rem;
+    border: 1px solid #555;
+    color: #444;
+    padding: 8px 20px;
+    margin-bottom: 8px;
+    text-align: left;
+    z-index: 1000;
+    border-radius: 5px;
+    transform: scale(0.93);
+    transform-origin: 0% 50%;
+    order: 2;
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    background-color: #fff;
+}
+
+.student-name > p {
+	margin: 0;
+	font-family: poppin-medium;
+	flex-grow: 1;
+}
+
+.student-name:hover {
+	transform: scale(0.96);
+}
+
+.draggable-icon{
+	float: right;
+	position: relative;
+}
+
+.teacher-desk {
+    order: 1;
+    cursor: grab;
+    background-color: #fd7e14;
+    background-color: #fd7e14c5;
+}
+
+.student-name:active,
+.teacher-desk:active {
+    cursor: grabbing;
+}
+
+.teacher-desk2 {
+    font-weight: bold;
+    /* color: #019aeb; */
+    font-size: 1rem;
+}
+
+.teacher-cell {
+	background-color: rgba(40, 167, 69, .33);
+	background-color: #fd7e14c5;
+}
+
+.hovered {
+    /* transform: scale(1.05); */
+    /* border: 1px solid #28a745;
+    border: 1px solid #007bff;
+ */
+    border: 1px solid #fd7e14;
+    transform: scale(1.01);
+    z-index: 1005;
+    background-color: #fff;
+}
+
+.student-pre-built-list {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: flex-start;
+    overflow: auto;
+    flex-grow: 1;
+    border-top: 2px solid #777;
+    padding-bottom: 5px;
+    max-height: 300px;
+}
+
+.name-editor-container {
+	display: flex;
+	flex-grow: 1;
+	justify-conent: flex-center;
+}
+
+.save-cancel-container {
+	display: flex;
+	flex-grow: 1;
+	justify-content: flex-end;
+}
+
+.student-list-title {
+    font-size: 1rem;
+    margin: 0.2rem;
+    padding: 0;
+}
+
+.seating-arrangement-name {
+    background-color: transparent;
+    color: #007bff;
+    /* border-bottom: 2px solid #007bff; */
+    cursor: pointer;
+    padding: 8px 20px;
+}
+
+.drag-drop-instruction {
+	position: absolute;
+    background-color: #ffc107;
+    width: 120%;
+    top: 6.5%;
+    right: 96%;
+    z-index: 11000;
+    padding: 8px 20px;
+    box-shadow: 0px 0px 3px 1px #333;
+    border-radius: 10px;
+    color: #444;
+    font-size: 1.2rem;
+    /* text-align: center; */
+    font-family: poppin-medium;
+}
+
+.cancel-seating-chart.modal-close-icon {
+    right: 20px;
+}

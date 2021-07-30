@@ -1,0 +1,19 @@
+{
+  "name": "livechart",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "jsdoc": "jsdoc -c jsdoc.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ASSISTments/LiveChart.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ASSISTments/LiveChart/issues"
+  },
+  "homepage": "https://github.com/ASSISTments/LiveChart#readme"
+}

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <bean id="mymessage" class = "autowiretest.Message">
+        <property name="message" value="Hello there!"/>
+    </bean>
+    <bean id="datautil" class="org.assistments.livechart.DataUtility">
+        <property name="problemlogoffset" value="23"></property>
+    </bean>
+</beans>

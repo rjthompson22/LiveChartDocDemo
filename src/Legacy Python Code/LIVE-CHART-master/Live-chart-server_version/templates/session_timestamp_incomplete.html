@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html >
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+
+  <title>ObserveME</title>
+  
+  
+  
+      <link rel="stylesheet" href="{{ url_for('static', filename='css/session.css')}}">
+      
+
+{#    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />#}
+{#    <meta http-equiv="Pragma" content="no-cache" />#}
+{#    <meta http-equiv="Expires" content="0" />#}
+{##}
+{#    <script type=text/javascript src="{{ url_for('static', filename='jquery.js') }}"></script>#}
+    <script  src="{{ url_for('static', filename='js/session.js')}}"></script>
+</head>
+<script>
+  function myFunction() {
+            var x = document.getElementById("myDIV");
+            if (x.style.display === "none") {
+                x.style.display = "block";
+            } else {
+                x.style.display = "none";
+            }
+        }
+        
+
+        
+        
+        
+        
+</script>
+</head>
+<body>
+        <div id="pre_coding_form">
+            <form action="/session" method="get">
+                <h2>ObserveME</h2>
+                <h3>Class Code: {{ args.class_id }}</h3>
+                <h3>Student {{ args.student_id }}</h3>
+                
+
+                <p>
+                    <label for="student_name" class="floatLabel">Student Name </label>
+                    <input id="student_name" name="student_name" value={{ args.student_id }} type="text">
+                </p>
+				
+				<button type="button" onclick="myFunction()">Kappa Value</button>
+                
+                <div id="myDIV">
+                
+                    
+                <p></p>
+				
+          
+                     <label for="student_name" class="floatLabel" style="float: left; margin-left: -50px;">
+                        Kappa value : Inter-reliability</label>
+                     <br></br>
+                    <label for="kappa" class="floatLabel" style="float: left; margin-left: -50px;">
+                        Shows mental effort:<br />&emsp;{{ args.shows_mental_effort}} </label>
+                     <br></br>
+                    <label for="kappa" class="floatLabel" style="float: left; margin-left: -50px;">
+                        Affect State:<br />&emsp;{{ args.affect_state}} </label>
+                     <br></br>
+                    <label for="kappa" class="floatLabel" style="float: left; margin-left: -50px;">
+                        Focus:<br />&emsp;{{ args.focus}} </label>
+                     <br></br>
+                   
+                    <label for="kappa" class="floatLabel" style="float: left; margin-left: -50px;">
+                        On task:<br />&emsp;{{ args.is_on_task}}</label>
+                        
+                    <label for="kappa" class="floatLabel" style="float: left; margin-left: -50px;">
+                        Writing:<br />&emsp;{{ args.is_writing}}</label>
+                        
+                    <label for="kappa" class="floatLabel" style="float: left; margin-left: -50px;">
+                        Req aid:<br />&emsp;{{ args.rec_aid}}</label>
+                        
+                    <label for="kappa" class="floatLabel" style="float: left; margin-left: -50px;">
+                        Hand raised:<br />&emsp;{{ args.hand_raised}}</label>
+                        
+                    <label for="kappa" class="floatLabel" style="float: left; margin-left: -50px;">
+                        Collab peer:<br />&emsp;{{ args.collab_peer}}</label>
+                        
+                    <label for="kappa" class="floatLabel" style="float: left; margin-left: -50px;">
+                        Fidgeting:<br />&emsp;{{ args.is_fidgeting}}</label>
+                        
+                    <label for="kappa" class="floatLabel" style="float: left; margin-left: -50px;">
+                        Teacher speaking:<br />&emsp;{{ args.teacher_speaking}}</label>
+                    
+                    
+                    
+                </p>
+                    
+                    
+                    
+                    
+                    
+                </p>    
+                
+                </div>
+				
+				
+                <p>
+                    <input type="submit" value="Start" class="pre_code" id="begin_coding"
+                           onclick="document.getElementById('action').setAttribute('value','1');">
+                    <input type="submit" value="Sync" class="pre_code" id="wait_coding"
+                           onclick="document.getElementById('action').setAttribute('value','2');">
+                           
+                    <input type="submit" value="Skip" class="pre_code" id="skip_student"
+                           onclick="document.getElementById('action').setAttribute('value','3');">
+                           
+
+                    <label>
+                    <input id="class_code" name="class_code" value={{ args.class_id }} type="hidden" >
+                    </label>
+                    <label>
+                    <input id="action" name="action" value='' type="hidden" >
+                    </label>
+                    <label>
+                    <input id="student_id" name="student_id" value={{ args.student_id }} type="hidden" >
+                    </label>
+                </p>
+            </form>
+        </div>
+
+        <div id="timer_form">
+            <form action="/session" method="get">
+                <h2>ObserveME</h2>
+                <h3>Class Code: {{ args.class_id }}</h3>
+                <h3>Student {{ args.student_id }}</h3>
+
+
+                <p>
+                    <label for="student_name" class="floatLabel">Student Name</label>
+                    <input id="student_name" name="student_name" value={{ args.student_id }} type="text">
+                </p>
+                <p>
+
+                    <h3 id="countdown_timer">Timer: 15</h3>
+                    <!--
+                    <input type="submit" value="Skip" class="pre_code" id="skip_student"
+                           onclick="document.getElementById('action').setAttribute('value','3');">
+                    -->
+                    <label>
+                    <input id="class_code" name="class_code" value={{ args.class_id }} type="hidden" >
+                    </label>
+                    <label>
+                    <input id="action" name="action" value='' type="hidden" >
+                    </label>
+                    <label>
+                    <input id="student_id" name="student_id" value={{ args.student_id }} type="hidden" >
+                    </label>
+                    
+                    
+                </p>
+            </form>
+        </div>
+        <div id="CreateRow">
+            <form action="/create_empty_row" method="get" id="createRow">
+                <label>
+                    <input id="action3" name="action3" value='' type="hidden" >
+                    </label>
+                <p>
+                    <input type="submit" value="Start syncing" id="submit">
+                </p>
+            </form>
+        </div> 
+        
+        <div id="sync_form1">
+            <form action="/start_sync_call" method="get">
+                <p>
+                    <input type="submit" value="Start syncing" id="submit">
+                </p>
+            </form>
+        </div> 
+        
+        <div id="sync_form2">
+            <form action="/ready_update_db" method="get">
+                <p>
+                    <input type="submit" value="Coder2:I am ready!" id="submit">
+                </p> 
+            </form>
+        </div> 
+        
+        <div id="sync_form3">
+            <form action="/start_sync_call" method="get">
+                <p>
+                    
+                    <h3>Other coders in session</h3>
+                    
+                    <label> Ready: {{ args.ready_users}}</label>
+                    <br></br>
+                     <label for="student_name" class="floatLabel">Student Name </label>
+                    <input id="student_name" name="student_name" value={{ args.student_id }} type="text">
+                    
+                    <div id="forcestart">
+                       <input type="submit" value="Start" id="submit">
+                    </div>
+                    <div>
+                    <input type="submit" value="Leave" class="pre_code" id="leave_coding"
+                           onclick="document.getElementById('sync_action1').setAttribute('value','2');">
+                    </div>       
+                     
+                    <input id="sync_action1" name="action1" value='' type="hidden" >
+                   
+                </p>
+            </form>
+        </div>
+        <div id="force_sync_form">
+            <form action="/start" method="get">
+                <p>
+                    <h3>Other coders </h3>
+                    <label> Ready: {{ args.ready_users}}</label>
+                    <br></br>
+                     <label for="student_name" class="floatLabel">Student Name </label>
+                    <input id="student_name" name="student_name" value={{ args.student_id }} type="text">
+                   
+                    <!--
+                    <input type="submit" value="Force Start" id="submit">
+                    -->
+                    <input type="submit" value="Start Sync" class="pre_code" id="start_coding"
+                           onclick="document.getElementById('sync_action2').setAttribute('value','1');">
+                    <input type="submit" value="Leave" class="pre_code" id="leave_coding"
+                           onclick="document.getElementById('sync_action2').setAttribute('value','2');">
+                     <label>
+                    <input id="sync_action2" name="action2" value='' type="hidden" >
+                    </label>
+                </p>
+                           
+                   
+                </p>
+            </form>
+        </div>
+        
+        
+        
+        <!---
+         <div id="leave_form">
+            <form action="/leave" method="get">
+                <p>
+                    <input type="submit" value="Leave" class="start_sync" id="skip_student">
+                     <label>
+                    <input id="sync_action1" name="action1" value='' type="hidden" >
+                    </label>
+                </p>
+            </form>
+        </div> -->
+        
+        </div> 
+        <div id="sync_form">
+            <form action="/start_sync_call" method="get" id="sync">
+                <h2>ObserveME</h2>
+                <h3>Class Code: {{ args.class_id }}</h3>
+                <h3>Student {{ args.student_id }} </h3>
+
+
+                <p>
+                    <label for="student_name" class="floatLabel">Student Name</label>
+                    <input id="student_name" name="student_name" value={{ args.student_id }} type="text">
+                </p>
+                <p>
+
+                    <h3 id="wait_msg">Waiting for Coders...</h3>
+                    <div id="start_sync_block">
+                    
+                    <input type="submit" value="Start_sync" class="pre_code" id="start_sync"
+                    onclick="document.getElementById('sync_action').setAttribute('value','5');">>
+  
+                     </div>       
+                    <input type="submit" value="Back" class="pre_code" id="skip_student"
+                           onclick="document.getElementById('sync_action').setAttribute('value','4');">
+
+                    <label>
+                    <input id="class_code" name="class_code" value={{ args.class_id }} type="hidden" >
+                    </label>
+                    <label>
+                    <input id="sync_action" name="action" value='' type="hidden" >
+                    </label>
+                    <label>
+                    <input id="student_id" name="student_id" value={{ args.student_id }} type="hidden" >
+                    </label>
+                </p>
+            </form>
+        </div>
+
+        <div id="find_student">
+            <form action="/session" method="get" id="sync">
+                <h2>ObserveME</h2>
+                <h3>Class Code: {{ args.class_id }}</h3>
+                <h3>Student {{ args.student_id }}</h3>
+
+
+                <p>
+                    <label for="student_name" class="floatLabel">Student Name</label>
+                    <input id="student_name" name="student_name" value={{ args.student_id }} type="text">
+                </p>
+                <p>
+
+                    <h3 id="find_st">Find Student {{ args.student_id }}...5</h3>
+
+                    <label>
+                    <input id="class_code" name="class_code" value={{ args.class_id }} type="hidden" >
+                    </label>
+                    <label>
+                    <input id="sync_action" name="action" value='' type="hidden" >
+                    </label>
+                    <label>
+                    <input id="student_id" name="student_id" value={{ args.student_id }} type="hidden" >
+                    </label>
+                </p>
+            </form>
+        </div>
+
+        <div id="coding_form">
+            <form action="/session" method="post">
+            <h2>ObserveME</h2>
+            <h3>Class Code: {{ args.class_id }}</h3>
+            <h3>Student {{ args.student_id }}</h3>
+
+
+            <p>
+                <label for="student_name" class="floatLabel">Student Name</label>
+                <input id="student_name" name="student_name" value={{ args.student_id }} type="text">
+
+            </p>
+
+
+
+            <h3>Engagement</h3>
+            <div class="coding_group">
+                <label>
+                    <input type="radio" class="option-input radio" name="shows_mental_effort" value="-1" checked/>
+                    Undetermined
+                </label>
+                <label>
+                    <input type="radio" class="option-input radio" name="shows_mental_effort" value="1"/>
+                    Displays Mental Effort
+                </label>
+                <label>
+                    <input type="radio" class="option-input radio" name="shows_mental_effort" value="0"/>
+                    Does NOT Display Mental Effort
+                </label>
+            </div>
+
+            <h3>Behavior</h3>
+            <div class="coding_group">
+                <label>
+                    <input type="radio" class="option-input radio" name="is_on_task" value="-1" checked/>
+                    Undetermined
+                </label>
+                <label>
+                    <input type="radio" class="option-input radio" name="is_on_task" value="1"/>
+                    ON Task
+                </label>
+                <label>
+                    <input type="radio" class="option-input radio" name="is_on_task" value="0"/>
+                    OFF Task
+                </label>
+            </div>
+
+            <h3>Affect</h3>
+            <div class="coding_group">
+                <label>
+                    <input type="radio" class="option-input radio" name="affect_state" value="unknown" checked/>
+                    Undetermined
+                </label>
+                <label>
+                    <input type="radio" class="option-input radio" name="affect_state" value="concentrating"/>
+                    Engaged Concentration
+                </label>
+                <label>
+                    <input type="radio" class="option-input radio" name="affect_state" value="confused"/>
+                    Confusion
+                </label>
+                <label>
+                    <input type="radio" class="option-input radio" name="affect_state" value="bored"/>
+                    Boredom
+                </label>
+                <label>
+                    <input type="radio" class="option-input radio" name="affect_state" value="frustrated"/>
+                    Frustration
+                </label>
+            </div>
+
+            <h3>Student Focus</h3>
+            <div class="coding_group">
+                <label>
+                    <input type="radio" class="option-input radio" name="focus" value="unknown" checked/>
+                    Undetermined
+                </label>
+                <label>
+                    <input type="radio" class="option-input radio" name="focus" value="screen"/>
+                    Computer Screen
+                </label>
+                <label>
+                    <input type="radio" class="option-input radio" name="focus" value="work"/>
+                    Book/Notebook
+                </label>
+                <label>
+                    <input type="radio" class="option-input radio" name="focus" value="teacher"/>
+                    Teacher
+                </label>
+                <label>
+                    <input type="radio" class="option-input radio" name="focus" value="peer"/>
+                    Peer
+                </label>
+            </div>
+            <h3>Situational Behavior</h3>
+            <div class="coding_group">
+                <label>
+                    <input type="checkbox" class="option-input checkbox" name="is_writing" value="1"/>
+                    Student is Writing
+                </label>
+                <label>
+                    <input type="checkbox" class="option-input checkbox" name="rec_aid" value="1"/>
+                    Receiving Aid (From Teacher)
+                </label>
+                <label>
+                    <input type="checkbox" class="option-input checkbox" name="hand_raised" value="1"/>
+                    Hand is Raised
+                </label>
+                <label>
+                    <input type="checkbox" class="option-input checkbox" name="collab_peer" value="1"/>
+                    Collaborating with Peer
+                </label>
+                <label>
+                    <input type="checkbox" class="option-input checkbox" name="is_fidgeting" value="1"/>
+                    Student is Fidgeting
+                </label>
+                <label>
+                    <input type="checkbox" class="option-input checkbox" name="teacher_speaking" value="1"/>
+                    Teacher is Speaking
+                </label>
+            </div>
+
+                <label>
+                    <input id="student_id" name="student_id" value={{ args.student_id }} type="hidden" >
+                </label>
+            <p>
+                <input type="submit" value="Log Coding" id="submit">
+            </p>
+
+            </form>
+        </div>
+
+        <div>
+            <form action="/dashboard" method="get">
+                <p>
+                    <input type="submit" value="Home" id="submit">
+                </p>
+            </form>
+        </div>
+
+
+    <script type="text/javascript">
+    
+        
+		
+        if ( ({{ args.action }}) === 1) {
+            
+            document.getElementById("pre_coding_form").style.display = "none";
+            document.getElementById("coding_form").style.display = "none";
+            document.getElementById("sync_form").style.display = "none";
+            document.getElementById("find_student").style.display = "none";
+            document.getElementById("timer_form").style.display = "block";
+            document.getElementById("force_sync_form").style.display = "none"
+            document.getElementById("sync_form1").style.display = "none";
+            document.getElementById("sync_form1").style.display = "none";
+            document.getElementById("sync_form3").style.display = "none";
+            document.getElementById("sync_form2").style.display = "none";
+            document.getElementById("sync_form").style.display = "none";
+            document.getElementById("sync_form1").style.display = "none";
+            document.getElementById("myDIV").style.display = "none";
+            document.getElementById("CreateRow").style.display = "none";
+            
+
+
+        
+            var seconds_left1 = 5;//15
+            var interval1 = setInterval(function() {
+                document.getElementById('countdown_timer').innerHTML = "Timer: " + --seconds_left1;
+
+                if (seconds_left1 <= 0)
+                {
+                    document.getElementById("pre_coding_form").style.display = "none";
+                    document.getElementById("timer_form").style.display = "none";
+                    document.getElementById("sync_form").style.display = "none";
+                    document.getElementById("find_student").style.display = "none";
+                    document.getElementById("force_sync_form").style.display = "none"
+                    document.getElementById("sync_form1").style.display = "none";
+                    document.getElementById("sync_form3").style.display = "none";
+                    document.getElementById("sync_form2").style.display = "none";
+                    document.getElementById("sync_form").style.display = "none";
+                    document.getElementById("sync_form1").style.display = "none";
+                    document.getElementById("myDIV").style.display = "none";
+                    document.getElementById("coding_form").style.display = "block";
+                    clearInterval(interval1);
+                    
+                    document.getElementById("createRow").submit();
+                }
+            }, 1000);
+            
+            
+            
+            
+        }
+        
+        else if ( ({{ args.action }}) === 2) { //sync
+            console.log("In action=2 ")
+            
+            /*
+            document.getElementById("pre_coding_form").style.display = "none";
+            document.getElementById("coding_form").style.display = "none";
+            document.getElementById("timer_form").style.display = "none";
+            document.getElementById("find_student").style.display = "none";
+            //document.getElementById("sync_form").style.display = "block";
+            
+            console.log("Hello");
+            console.log( ({{ args.role }}));
+            
+            
+            if ( ({{ args.role }}) === 1) {
+            
+            
+                document.getElementById("start_sync_block").style.display = "block";
+                
+                console.log("Hello1");
+                console.log({{args.coding_session}});
+                
+                
+                }
+            else {
+                
+                document.getElementById("sync_form1").style.display = "none";
+                document.getElementById("sync_form2").style.display = "block";
+                document.getElementById("sync_form").style.display = "none";
+                
+                 console.log("works?");
+                 console.log({{args.coding_session}});
+                 
+                }
+            */
+            document.getElementById("pre_coding_form").style.display = "none";
+            document.getElementById("coding_form").style.display = "none";
+            document.getElementById("sync_form").style.display = "none";
+            document.getElementById("timer_form").style.display = "none";
+            
+            document.getElementById("sync_form2").style.display = "none";
+            document.getElementById("sync_form1").style.display = "none";
+            document.getElementById("find_student").style.display = "none";
+            document.getElementById("CreateRow").style.display = "none";
+            if ( ({{ args.role }}) === 1) {
+            
+                document.getElementById("sync_form3").style.display = "none";
+                document.getElementById("force_sync_form").style.display = "block";
+                
+                console.log("showing button");
+                
+                
+                
+                }
+           else {
+                document.getElementById("force_sync_form").style.display = "none";
+                document.getElementById("sync_form3").style.display = "block";
+                document.getElementById("forcestart").style.display = "none";
+                console.log("hiding button");
+                }
+           
+            var seconds_left2 = 1;
+            var interval2 = setInterval(function() {
+                --seconds_left2;
+
+                if (seconds_left2 <= 0)
+                {
+                    document.getElementById("sync_action").setAttribute("value","2");
+                    document.getElementById("sync").submit();
+                    clearInterval(interval2);
+                }
+            }, 1000);
+            
+        }
+        else if ( ({{ args.action }}) === 12) { //sync
+            console.log("Hello action 12");
+             document.getElementById("CreateRow").style.display = "none";
+            document.getElementById("pre_coding_form").style.display = "none";
+            document.getElementById("coding_form").style.display = "none";
+            document.getElementById("timer_form").style.display = "none";
+            document.getElementById("find_student").style.display = "none";
+            document.getElementById("force_sync_form").style.display = "none"
+
+            //document.getElementById("sync_form").style.display = "block";
+            
+            console.log("Hello");
+            console.log( ({{ args.role }}));
+            
+            
+            if ( ({{ args.role }}) === 1) {
+            
+            
+                document.getElementById("start_sync_block").style.display = "block";
+                
+                console.log("Hello1");
+                console.log({{args.coding_session}});
+                
+                
+                }
+            else {
+                
+                document.getElementById("sync_form1").style.display = "none";
+                document.getElementById("sync_form2").style.display = "block";
+                document.getElementById("sync_form").style.display = "none";
+                document.getElementById("sync_form3").style.display = "none";
+                
+                
+                 console.log("works?");
+                 console.log({{args.coding_session}});
+                 
+                }
+            /*
+
+           
+            var seconds_left2 = 1;
+            var interval2 = setInterval(function() {
+                --seconds_left2;
+
+                if (seconds_left2 <= 0)
+                {
+                    document.getElementById("sync_action").setAttribute("value","2");
+                    document.getElementById("sync").submit();
+                    clearInterval(interval2);
+                }
+            }, 1000);*/
+        }
+        else if ( ({{ args.action }}) === 5) {
+            console.log("I am in 5");
+             document.getElementById("CreateRow").style.display = "none";
+            document.getElementById("pre_coding_form").style.display = "none";
+            document.getElementById("coding_form").style.display = "none";
+            document.getElementById("sync_form").style.display = "none";
+            document.getElementById("timer_form").style.display = "none";
+            document.getElementById("sync_form3").style.display = "none";
+            document.getElementById("sync_form2").style.display = "none";
+            document.getElementById("sync_form1").style.display = "none";
+            document.getElementById("force_sync_form").style.display = "none"
+            document.getElementById("find_student").style.display = "block";
+            
+
+            console.log("I Got clicked");
+            var seconds_left5 = 5;
+            var interval5 = setInterval(function() {
+                document.getElementById('find_st').innerHTML = "Find Student {{ args.student_id }}..." + --seconds_left5;
+
+                if (seconds_left5 <= 0)
+                {   
+                     document.getElementById("CreateRow").style.display = "none";
+                    document.getElementById("pre_coding_form").style.display = "none";
+                    document.getElementById("coding_form").style.display = "none";
+                    document.getElementById("sync_form").style.display = "none";
+                    document.getElementById("find_student").style.display = "none";
+                    document.getElementById("sync_form3").style.display = "none";
+                    document.getElementById("sync_form2").style.display = "none";
+                    document.getElementById("sync_form1").style.display = "none";
+                    document.getElementById("force_sync_form").style.display = "none"
+                    document.getElementById("timer_form").style.display = "block";
+
+                    var seconds_left6 = 15;
+                    var interval6 = setInterval(function() {
+                        document.getElementById('countdown_timer').innerHTML = "Timer: " + --seconds_left6;
+
+                        if (seconds_left6 <= 0)
+                        {
+                            document.getElementById("pre_coding_form").style.display = "none";
+                            document.getElementById("timer_form").style.display = "none";
+                            document.getElementById("sync_form").style.display = "none";
+                            document.getElementById("find_student").style.display = "none";
+                            document.getElementById("sync_form3").style.display = "none";
+                            document.getElementById("sync_form2").style.display = "none";
+                            document.getElementById("sync_form1").style.display = "none";
+                            document.getElementById("force_sync_form").style.display = "none";
+                            document.getElementById("coding_form").style.display = "block";
+                             document.getElementById("CreateRow").style.display = "none";
+                             document.getElementById("createRow").submit();
+                            clearInterval(interval6);
+                        }
+                    }, 1000);
+                    clearInterval(interval5);
+                }
+            }, 1000);
+        }
+        
+         else if ( ({{ args.action }}) === 10) { //sync
+            
+            document.getElementById("pre_coding_form").style.display = "none";
+            document.getElementById("coding_form").style.display = "none";
+            document.getElementById("timer_form").style.display = "none";
+            document.getElementById("find_student").style.display = "none";
+            
+            document.getElementById("sync_form1").style.display = "block";
+            document.getElementById("sync_form2").style.display = "none";
+            document.getElementById("sync_form").style.display = "none";
+            
+            document.getElementById("sync_form3").style.display = "none";
+            
+            document.getElementById("force_sync_form").style.display = "none";
+             document.getElementById("CreateRow").style.display = "none";
+            
+            console.log("Hello");
+            console.log( ({{ args.role }}));
+            
+            
+            if ( ({{ args.role }}) === 1) {
+            
+            
+                
+                
+                console.log("Hello1 from new block");
+                console.log("Coding session");
+                console.log({{args.coding_session}});
+                
+                
+                }
+                
+            }
+            
+            else if ( ({{ args.action }}) === 11) { //sync
+            console.log("In action ==11");
+            document.getElementById("sync_form3").style.display = "none";
+            document.getElementById("sync_form2").style.display = "none";
+            document.getElementById("sync_form").style.display = "none";
+            document.getElementById("sync_form1").style.display = "none";
+            document.getElementById("myDIV").style.display = "none";
+            document.getElementById("pre_coding_form").style.display = "block";
+            document.getElementById("coding_form").style.display = "none";
+            document.getElementById("timer_form").style.display = "none";
+            document.getElementById("find_student").style.display = "none";
+            document.getElementById("force_sync_form").style.display = "none";
+             document.getElementById("CreateRow").style.display = "none";
+            
+            
+            
+            console.log("Hello");
+            console.log( ({{ args.role }}));
+            
+            
+            if ( ({{ args.role }}) === 1) {
+            
+            
+                
+                
+                console.log("Hello1 from 11 blockk");
+                console.log("Coding session");
+                console.log({{args.coding_session}});
+                
+                
+                }
+                
+            }
+        else {
+            console.log("Hello from 11 block else condition");
+            document.getElementById("sync_form3").style.display = "none";
+            document.getElementById("sync_form2").style.display = "none";
+            document.getElementById("sync_form").style.display = "none";
+            document.getElementById("sync_form1").style.display = "none";
+            document.getElementById("coding_form").style.display = "none";
+            document.getElementById("timer_form").style.display = "none";
+            document.getElementById("sync_form").style.display = "none";
+            document.getElementById("find_student").style.display = "none";
+            document.getElementById("force_sync_form").style.display = "none"
+            document.getElementById("sync_form1").style.display = "none";
+            document.getElementById("myDIV").style.display = "none";
+             document.getElementById("CreateRow").style.display = "none";
+            document.getElementById("pre_coding_form").style.display = "block";
+            
+        }
+
+        var coll = document.getElementsByClassName("collapsible");
+        var i;
+
+        /*for (i = 0; i < coll.length; i++) {
+            
+            coll[i].addEventListener("click", function() {
+            this.classList.toggle("active");
+            var content = this.nextElementSibling;
+            if (content.style.display === "block") {
+                content.style.display = "none";
+            } else {
+            content.style.display = "block";
+            }
+        });
+        }*/
+        
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,1145 @@
+@font-face {
+  font-family: "poppin-light";
+  src: url("../lib/fonts/poppins-light.ttf");
+}
+
+@font-face {
+  font-family: "poppin-regular";
+  src: url("../lib/fonts/poppins-regular.ttf");
+}
+
+@font-face {
+  font-family: "poppin-medium";
+  src: url("../lib/fonts/poppins-medium.ttf");
+}
+
+@font-face {
+  font-family: "homemadeapple";
+  src: url("../lib/fonts/HomemadeApple-Regular.ttf");
+}
+
+@font-face {
+  font-family: "pangolin";
+  src: url("../lib/fonts/Pangolin-Regular.ttf");
+}
+
+.clearfix {
+  overflow: auto;
+}
+
+.clearfix::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+/* this is generally used on body tag to standardize the look and feel */
+.root-container {
+  background-color: #f5f5f5;
+  margin: 0;
+  font-family: "Gotham Book", sans-serif;
+  display: flex;
+  flex-direction: column;
+  font-size: 0.75rem;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* there is a weird bootstrap focus code that is interfering the UX by showing this stupid blue outline on button:focus */
+.root-container button:focus {
+  outline: unset !important;
+}
+
+/* putting in the gradient bg to standardize it across various ASSISTments platforms */
+.header-nav-bar {
+  background-color: #0d6299;
+  background-image: -webkit-linear-gradient(left, #0d6299 8%, #005994 40%, #36b734 96%);
+  background-image: linear-gradient(to right, #0d6299 8%, #005994 40%, #36b734 96%);
+  height: 3.5rem;
+  position: relative;
+  /* margin-bottom: 35px; */
+  /* box-shadow: 0px 2px 4px 1px #444; */
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+}
+
+.content-block {
+  /* flex: 1 0 auto; */
+  display: flex;
+  justify-content: center;
+  overflow: auto;
+  flex-grow: 1;
+  order: 1;
+  margin: 0 0 5px 0px;
+}
+
+.content-block-fullscreen {
+  margin: 0px;
+}
+
+.left {
+  float: left;
+}
+
+.right {
+  float: right;
+}
+
+/* this shows the students progress and affective states */
+.info-block {
+  position: relative;
+  width: 100%;
+  /* border-radius: 8px; */
+  /* padding: 5px 8px; */
+  /* margin-top: 20px; */
+  background-color: #fff;
+  /* box-shadow: 0px 0px 2px 1px #1d2124; */
+  overflow: hidden;
+  max-height: 1600px;
+  /* border-top: 4px solid #ddd; */
+  border-bottom: 4px solid #ddd;
+  display: flex;
+  align-self: flex-start;
+  height: 100%;
+  flex-flow: column;
+}
+
+.info-block-fullscreen {
+  border: unset;
+}
+
+.info-block, .info-block * {
+  font-family: "poppin-light";
+  font-family: "poppin-regular";
+  /*  font-family: "poppin-medium"; */
+  /* font-family: "homemadeapple";
+	font-family: "pangolin"; */
+}
+
+.supp-info {
+  background-color: #eee;
+  width: auto;
+  position: relative;
+  color: #333;
+  border-radius: 20px;
+  padding: 4px 14px;
+  margin-right: 1rem;
+  justify-content: flex-end;
+  white-space: nowrap;
+}
+
+.info-block-header {
+  /* background-color: #28a745; */
+  background-color: #007bff99;
+  background-image: linear-gradient(to right, #0d6299 8%, #005994 40%, #36b734 96%);
+  color: #fff;
+  padding: 15px;
+  padding: 5px 15px 5px 15px;
+  padding-bottom: 0.8em;
+  /* position: absolute; */
+  width: 100%;
+  /* height: 12.5%;
+	max-height: 6.26em;
+	min-height: 85px; */
+  top: 0;
+  left: 0;
+  z-index: 400;
+  box-shadow: 0px 0px 4px 1px #1d2124;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+}
+
+.info-block-header>p {
+  margin: 0;
+  flex-grow: 1;
+  align-self: flex-end;
+}
+
+.seating-arrangement-toggle-container {
+  flex-grow: 0 !important;
+  margin-right: 1rem !important;
+  display: flex;
+  align-items: center;
+}
+
+.seating-arrangement-toggle-container .btn {
+  font-size: 0.8rem !important;
+}
+
+.seating-arrangement .toggle {
+  min-width: 10rem !important;
+}
+
+.toggle.btn {
+  min-width: 3.5rem !important;
+}
+
+#info-block-board {
+  width: 100%;
+  /* position: absolute;
+	top: 12%;
+	height: 87.5%; */
+  left: 0;
+  background-color: #fff;
+  padding: 8px 22px;
+  display: flex;
+  flex-direction: column;
+  /* justify-content: space-around; */
+  justify-content: flex-start;
+  align-content: center;
+  overflow: auto;
+  display: flex;
+  flex-grow: 1;
+}
+
+#info-block-board>span {
+  cursor: pointer;
+}
+
+.info-block-zones {
+  order: 1;
+  /* flex-grow: 1; */
+  /* background-color: #faa; */
+  display: flex;
+  flex-direction: row;
+  /* flex-direction: column; */
+  justify-content: space-around;
+  align-content: center;
+  align-items: center;
+  margin-bottom: 0.2rem;
+  /* margin: 1.25rem 0; */
+  /* display:none; */
+  margin-top: 1.76rem;
+}
+
+.playback-live-ended {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: none;
+}
+
+.student-row {
+  display: flex;
+  flex-flow: row wrap;
+  /* justify-content: space-around; */
+  justify-content: space-evenly;
+  align-content: center;
+  align-items: center;
+  width: 100%;
+  /* margin: 5px 0px; */
+  border-bottom: 1px solid #888;
+  padding: 5px 0px;
+  align-items: stretch;
+}
+
+.info-block-general>.student-row:first-of-type {
+  border-top: 1px solid #888;
+}
+
+.info-red-zone .student-row, .info-gold-zone .student-row {
+  justify-content: flex-start;
+  text-align: center;
+  border: unset;
+}
+
+.info-red-zone .student-info, .info-gold-zone .student-info {
+  width: auto;
+  min-width: 50px;
+  font-family: poppin-medium !important;
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+.student-info, .empty-space, .teacher-space {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 6px 12px;
+  border: 1px solid #fff;
+  cursor: pointer;
+  margin: 0;
+  width: 16%;
+  position: relative;
+  display: flex;
+  overflow: hidden;
+}
+
+.empty-space {
+  background-color: #000;
+  opacity: 0;
+}
+
+.empty-space * {
+  opacity: 0.3;
+}
+
+.teacher-space {
+  background-color: rgba(220, 53, 69, 0.25);
+  background-color: #28a74555;
+  background-color: #fd7e14bb;
+}
+
+.student-info>p {
+  margin: 0;
+  margin-bottom: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  width: 100%;
+  float: left;
+}
+
+.student-info-description {
+  font-size: 0.72rem;
+  margin: 0 !important;
+}
+
+.student-info-description:first-of-type {
+  border-top: 1px solid #7777;
+}
+
+.last-five-problems {
+  font-weight: bold;
+  font-size: 1rem;
+  height: 1rem;
+  display: flex !important;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+}
+
+.student-img, .teacher-img {
+  width: 16%;
+  max-width: 35px;
+  position: relative;
+  opacity: 0.85;
+  left: 0%;
+  float: left;
+  align-self: center;
+}
+
+.teacher-img {
+  width: 40%;
+}
+
+.student-img-gold, .student-img-red {
+  display: none;
+}
+
+.teacher-space>p {
+  position: relative;
+  /* top: 50%; */
+  width: 100%;
+  font-weight: bold;
+  text-decoration: underline;
+  text-align: center;
+  /* transform: translateY(-50%); */
+}
+
+.disabled {
+  /* background-color: rgba(70, 70, 70, 0.5) !important; */
+  /* opacity: 0.5; */
+  border: 1px solid rgba(70, 70, 70, .6);
+  /* background-color: rgba(70, 70, 70, 0.75) !important; */
+  /* opacity: 0.7; */
+  border: 1px solid rgba(70, 70, 70, .6);
+  /* filter: blur(1px); */
+  background-color: #5c5c5c;
+}
+
+.disabled-ctrl {
+  opacity: 0.5;
+}
+
+.disabled-complete {
+  /* background-color: rgba(70, 70, 70, 0.75) !important; */
+  /* opacity: 0.85; */
+  border: 1px solid rgba(70, 70, 70, .6);
+  background-color: #5c5c5c !important;
+}
+
+.red-marked * {
+  color: #fff;
+}
+
+.disabled *, .disabled-complete * {
+  color: #aaa;
+  /* filter: grayscale(0.5) !important; */
+}
+
+.disabled-complete-probelm-analysis * {
+  color: #777;	
+}
+
+.disabled img, .disabled-complete img {
+  opacity: 0.4;
+}
+
+.info-red-zone, .info-gold-zone {
+  position: relative;
+  /* width: 48.5%;
+	height: 90%; */
+  width: 100%;
+  /* border-radius: 0px 10px; */
+  padding: 5px 0px;
+  /* display: none; */
+  border-radius: 9px 4px 4px 4px;
+}
+
+.info-red-zone {
+  /* box-shadow: 0px 0px 2px 1px #f00; */
+  /* margin: 1.1rem 0 0.25rem 0; */
+}
+
+.disable-red-zone {
+  padding: 0;
+  /* border: 0.5px solid #f00; */
+  /* box-shadow: 0px 0px 3px 0px #f00; */
+}
+
+.info-gold-zone {
+  border-radius: 9px 4px 4px 4px;
+  /*  box-shadow: 0px 0px 2px 1px #e8b923; */
+  /* margin: 1.1rem 0 0.25rem 0; */
+}
+
+.disable-gold-zone {
+  padding: 0;
+  /* border: 0.5px solid #e8b923;
+    box-shadow: 0px 0px 3px 0px #e8b923; */
+}
+
+.info-red-zone-title, .info-gold-zone-title, .info-block-general-title {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  padding: 2px;
+  transform: translate(0px, 30%);
+  border-radius: 5px 5px 0px 0px;
+  cursor: default;
+  background-color: #fff;
+  color: #333;
+  /* font-family: poppin-medium; */
+  font-size: 1.2rem;
+}
+
+.info-red-zone-title {
+  /* color: #dc3545; */
+  /* box-shadow: 0px 0px 2px 1px #ffc107; */
+  /* box-shadow: 0px 0px 2px 1px #f00; */
+}
+
+.info-gold-zone-title {
+  /* color: #ffc107; */
+  /* color: #333; */
+  cursor: pointer;
+  /* box-shadow: 0px 0px 2px 1px #ffc107; */
+}
+
+.blue {
+  color: #007bff;
+  font-weight: bold;
+}
+
+.info-block-general-title {
+  background-color: #007bff;
+  color: #fff;
+  display: none;
+}
+
+.info-red-zone .student-info {
+  background-color: #dc3545;
+  color: #fff;
+  /* font-weight: bold; */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  white-space: nowrap;
+}
+
+#placeholder-red {
+  color: #dc3545;
+  background-color: transparent;
+  border: 1px solid #dc3545;
+}
+
+.student-info {
+  display: flex;
+  flex-flow: column nowrap;
+  transform: scale(0.985);
+}
+
+.student-info:hover {
+  transform: scale(1.015);
+}
+
+/* For the progress bar container
+	Does the progress bar make sense for
+	1. skill builder
+	2. complete all
+	3. complicated multiple section problem set
+	4. should the bar be last n problems??
+
+
+ */
+.progress {
+  height: 0.5rem !important;
+  opacity: 0.75;
+  margin-top: 2px;
+}
+
+.student-name-info, .teacher-name-info {
+  text-align: center;
+  position: relative;
+  /*  width: 80%;
+    top: 50%;
+    transform: translateY(-50%); */
+  font-size: 0.9rem;
+  /* display: -webkit-box;
+	-webkit-line-clamp: 1;
+	-webkit-box-orient: vertical; */
+  overflow: hidden;
+  line-height: 1.8;
+  margin: 0;
+  align-self: center;
+  flex-grow: 1;
+  font-family: poppin-medium;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.teacher-name-info {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  white-space: normal;
+  text-align: center !important;
+}
+
+.teacher-student-avatar-container {
+  width: 100%;
+  position: relative;
+  display: flex;
+  flex-flow: row nowrap;
+}
+
+.red-marked {
+  border: 1px solid #dc3545 !important;
+  background-color: rgba(220, 53, 69, 0.5);
+  background-color: rgba(220, 53, 69, 0.58);
+  /* color: #f00; */
+}
+
+.check {
+  color: #28a745;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.cross {
+  color: #f00;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+/** DONOT delete these they are needed for decision making from the stakeholder*/
+.red-marked .check {
+  color: #0f0;
+  color: #64DD17;
+  color: #00e600;
+}
+
+.disabled-complete .check {
+  color: #28a745;
+}
+
+/* .red-marked>.custom-floating-icon {
+    background: #dc3545!important;
+} */
+.info-gold-zone .student-info {
+  background-color: #e8b923;
+  background-color: #ffc107;
+  color: #fff;
+  color: #333;
+  /* font-weight: bold; */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  white-space: nowrap;
+}
+
+#placeholder-gold {
+  color: #509A52;
+  background-color: transparent;
+  border: 1px solid #509A53;
+}
+
+.gold-marked {
+  border: 1px solid #e8b923;
+  background-color: #ffc10799;
+  /* color: #e8b923; */
+}
+
+.info-block-general {
+  order: 2;
+  /* flex-grow: 2; */
+  background-color: #ddd;
+  border-radius: 5px;
+  box-shadow: 0px 0px 2px 1px #007bff;
+  width: 100%;
+  padding: 12px 24px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-content: center;
+  align-items: center;
+  margin: 8px 0 0 0;
+  /* overflow: hidden; */
+}
+
+.dialog-container {
+  /* background-color: rgba(13, 98, 153, 0.85); */
+  background-color: rgba(150, 150, 150, 0.70);
+  z-index: 500;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+}
+
+.dialog-setting {
+  display: none;
+}
+
+/* .dialog-setting {
+	background-color: #fff;
+	left: 50%;
+	top: 50%;
+	position: absolute;
+	transform: translate(-50%, -50%);
+	border-radius: 10px;
+	box-shadow: 0px 0px 2px 2px #666;
+	min-width: 40%;
+	overflow: hidden;
+	display: none;
+	padding: 0.5rem 2rem;
+} */
+.width-2-columns {
+  position: relative;
+  width: 70%;
+  left: 15%;
+  float: left;
+
+  . gold-marked {
+    border: 1px solid #e8b923;
+    background-color: #ffc10799;
+    /* color: #e8b923; */
+    background-color: #36B734dd;
+  }
+
+  -webkit-column-count: 2;
+  -moz-column-count: 2;
+  column-count: 2;
+}
+
+.top-right-btn, .top-right-btn2 {
+  color: #555;
+  font-size: 2em !important;
+}
+
+#setting-icon, #seating-arrangement {
+  /* color: #007bff; */
+  /* color: #1d2124; */
+  color: #f2f2f2;
+  align-self: center;
+  padding: 2px;
+}
+
+.gold-marked {
+  border: 1px solid #e8b923;
+  background-color: #ffc10799;
+  /* color: #e8b923; */
+  background-color: #36B734dd;
+}
+
+#dialog-setting-close {
+  color: #fff;
+  /* font-size: 1.56em!important; */
+  top: 0;
+  font-weight: bold;
+}
+
+#dialog-setting-title {
+  /* padding: 14px 10px 10px 10px;
+    box-shadow: 0px 1px 4px #555;
+    background-color: #007bff; */
+  color: #333;
+  font-family: poppin-medium;
+}
+
+.ctrl-speed-container>.toggle {
+  position: relative;
+  right: 0%;
+  min-width: 50% !important;
+  /* transform: scale(0.75); */
+}
+
+.ctrl-speed-container, .ctrl-date-container {
+  /* width: 90%;
+    left: 5%; */
+  position: relative;
+}
+
+.ctrl-date-container {
+  padding-bottom: 10px;
+}
+
+.ctrl-speed-container *, .ctrl-date-container *, .ctrl-button-container * {
+  margin: 0;
+}
+
+.ctrl-speed-container>label, .ctrl-date-container>label {
+  color: #7a7a7a;
+}
+
+.ctrl-button-container {
+  margin: 15px 0px 10px 0px;
+  float: right;
+  position: relative;
+  /* width: 100%;
+	display: flex;
+	justify-content: flex-end; */
+}
+
+.dialog-setting .dialog-setting-cancel {
+  margin: 15px 10px 0px 0px;
+  font-size: 1.25rem;
+}
+
+.dialog-setting #submit {
+  left: unset;
+  transform: unset;
+}
+
+.dialog-setting-cancel {
+  margin-left: 1rem;
+}
+
+.button-action, .cancel-seating-chart {
+  cursor: pointer;
+  padding: 2px 3px;
+}
+
+#setting-icon {
+  margin-left: 1rem;
+}
+
+.button-action:hover {
+  /* transform: scale(1.05); */
+  border-radius: 3px;
+  box-shadow: 0px 0px 2px 1px #fff;
+  padding: 2px 3px;
+  color: #fff;
+}
+
+.disabled-ctrl:hover {
+  /* transform: scale(1.05); */
+  border: none;
+  box-shadow: none;
+  color: #484545;
+}
+
+.disabled-ctrl {
+  color: #484545;
+  background: none;
+  border: none;
+}
+
+.cancel-seating-chart:hover {
+  /* transform: scale(1.05); */
+  /* border-radius: 3px;
+    box-shadow: 0px 0px 2px 1px #007bfe;
+    color: #007bfe; */
+}
+
+.button-action:active {
+  /* transform: scale(1.05); */
+  margin-top: 1px;
+  border-radius: 3px;
+  box-shadow: 0px 0px 2px 1px #fff;
+  padding: 2px;
+  color: #fff;
+}
+
+.header-title1 {
+  font-size: 2em;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.header-title2 {
+  font-size: 2.56em;
+  font-weight: bold;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.gold-marked {
+  border: 1px solid #e8b923;
+  background-color: #ffc10799;
+  /* color: #e8b923; */
+}
+
+.center {
+  text-align: center;
+}
+
+.underline {
+  text-decoration: underline;
+}
+
+.regular-txt1 {
+  font-size: .8rem;
+}
+
+.regular-txt2 {
+  font-size: 1rem;
+}
+
+.regular-txt3 {
+  font-size: 1.2rem;
+}
+
+.regular-txt4 {
+  font-size: 1.6rem;
+}
+
+.regular-txt5 {
+  font-size: 2.2rem;
+}
+
+.custom-floating-icon {
+  position: absolute;
+  border-radius: 100px;
+  bottom: 100%;
+  right: 0%;
+  transform: translate(50%, 50%);
+  height: 0.9rem;
+  width: 0.9rem !important;
+  z-index: 10;
+  /* background: #ffc107; */
+  background: transparent;
+  display: none;
+}
+
+.custom-floating-icon {
+  -webkit-animation: blink-scale 2s ease-in-out alternate infinite;
+  animation: blink-scale 2s ease-in-out alternate infinite;
+}
+
+@-webkit-keyframes blink-scale {
+  from {
+    transform: translate(0%, 50%)scale(0.85);
+  }
+
+  to {
+    transform: translate(0%, 50%) scale(1.05);
+  }
+}
+
+@keyframes blink-scale {
+  from {
+    transform: translate(0%, 50%)scale(0.85);
+  }
+
+  to {
+    transform: translate(0%, 50%) scale(1.05);
+  }
+}
+
+.expand-reveal {
+  -webkit-animation: expand-reveal-kf 1s ease-out forwards;
+  animation: expand-reveal-kf 1s ease-out forwards;
+}
+
+@-webkit-keyframes expand-reveal-kf {
+  from {
+    height: 40%;
+  }
+
+  to {
+    height: 100%;
+  }
+}
+
+@keyframes expand-reveal-kf {
+  from {
+    height: 40%;
+  }
+
+  to {
+    height: 100%;
+  }
+}
+
+.expand-reveal2 {
+  -webkit-animation: expand-reveal-kf2 0.75s ease-out forwards;
+  animation: expand-reveal-kf2 0.75s ease-out forwards;
+  opacity: 0;
+}
+
+@-webkit-keyframes expand-reveal-kf2 {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes expand-reveal-kf2 {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+#footer-container {
+  order: 2;
+}
+
+#footer-container hr {
+  margin: 2px 0;
+}
+
+.good-job-badge {
+  position: absolute;
+  width: 20%;
+  right: 5px;
+  top: 5px;
+  /* transform: translateY(-40%); */
+  max-width: 22px;
+  display: none;
+  /* filter: drop-shadow(0px 0px 0px black); */
+}
+
+/* Student Dialog Box */
+.dialog-student {
+  background-color: #fff;
+  left: 50%;
+  top: 50%;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  border-radius: 10px;
+  box-shadow: 0px 0px 2px 2px #666;
+  border: 1px solid #555;
+  min-width: 40%;
+  overflow: hidden;
+  display: flex;
+  width: 70%;
+  height: 86%;
+  flex-flow: column nowrap;
+}
+
+.dialog-student-container {
+  padding: 0.5rem 2rem;
+  display: flex;
+  flex-flow: column nowrap;
+  flex-grow: 1;
+  height: 60%;
+  background: #f5f5f5;
+}
+
+.student-info-container {
+  /* padding: 10px; */
+  /* height: 500px; */
+  overflow: hidden;
+  display: flex;
+  flex-flow: column nowrap;
+}
+
+.info-general {
+  position: relative;
+}
+
+.info-general p {
+  margin: 0;
+}
+
+.info-problem-detail {
+  /* border-radius: 10px;
+	border: 1px solid #66b0ff; */
+  padding: 20px 10px;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background: #fff;
+}
+
+.info-problem-detail .check, .info-problem-detail .cross {
+  font-size: 1.2rem;
+}
+
+.correct {
+  color: green;
+}
+
+.incorrect {
+  color: red;
+}
+
+.hint {
+  color: orange;
+}
+
+.student-progress span {
+  font-size: 1.2rem;
+}
+
+.modal-close-icon {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  color: #007bfe;
+  font-size: 1.6rem;
+  margin: 0;
+  color: #6c757d;
+}
+
+.modal-close-icon:hover {
+  /* color: #007bfe; */
+  color: #6c757d;
+  box-shadow: 0px 0px 2px 1px #007bfe;
+  box-shadow: 0px 0px 2px 1px #6c757d;
+}
+
+.btn:focus {
+  box-shadow: unset !important;
+}
+
+/**
+* New Assistments color code as per Ryan Emberling
+* starts here
+*/
+.btn-primary {
+  background-color: #204B6B;
+  border: #204B6B;
+}
+
+.gold-marked {
+  background-color: #36B734dd;
+}
+
+.gold-marked .check {
+  color: #003412;
+  color: #006442;
+  color: #407A52;
+}
+
+.info-gold-zone .student-info {
+  background-color: #36B734ee;
+}
+
+/**
+* New Assistments color code as per Ryan Emberling
+* ends here
+*/
+.info-options-right {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+
+/**
+*
+* Toggle swich for student info modal
+*
+**/
+/* The switch - the box around the slider */
+.switch-label {
+  float: left;
+}
+
+.switch {
+  margin-left: 8px;
+  margin-top: 2px;
+  position: relative;
+  display: inline-block;
+  width: 30px;
+  height: 16px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.switch-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.switch-slider:before {
+  position: absolute;
+  content: "";
+  height: 12px;
+  width: 12px;
+  left: 3px;
+  bottom: 2px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked+.switch-slider {
+  background-color: #2196F3;
+}
+
+input:focus+.switch-slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked+.switch-slider:before {
+  -webkit-transform: translateX(12px);
+  -ms-transform: translateX(12px);
+  transform: translateX(12px);
+}
+
+/* Rounded sliders */
+.switch-slider.round {
+  border-radius: 16px;
+}
+
+.switch-slider.round:before {
+  border-radius: 50%;
+}

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<style>
+
+<!--
+#mydiv2 {
+    position: absolute;
+    z-index: 9;
+    background-color: #f1f1f1;
+    text-align: center;
+    border: 1px solid #d3d3d3;
+}
+
+#mydiv1 {
+    position: absolute;
+    z-index: 9;
+    background-color: #f1f1f1;
+    text-align: center;
+    border: 1px solid #d3d3d3;
+}
+-->
+[id^="mydiv"] {
+    position: absolute;
+    z-index: 9;
+    background-color: #f1f1f1;
+    text-align: center;
+    border: 1px solid #d3d3d3;
+}
+#board {
+    margin: 500px 0;
+    
+}
+#mydiv2header {
+    padding: 10px;
+    cursor: move;
+    z-index: 10;
+    background-color: #2196F3;
+    color: #fff;
+}
+
+#mydiv1header {
+    padding: 10px;
+    cursor: move;
+    z-index: 20;
+    background-color: #2196F3;
+    color: #fff;
+}
+</style>
+<body>
+
+<center><h1>Class room seating chart</h1></center>
+
+<center><p>Click and hold the mouse button down while moving the student</p></center>
+
+
+
+
+
+
+<div id="mydiv2">
+  <div id="mydiv2header">Student 2</div>
+  
+</div>
+
+<div id="mydiv1">
+  <div id="mydiv1header">Student 1</div>
+  
+</div>
+
+<div id="board">
+    
+<p align="center">BOARD</p>
+<hr width="1000" align="center">
+</div>
+
+<button onclick="save();"> SAVE</button>
+<!--
+<div id="mydiv">
+  <div id="mydivheader">Student 4</div>
+  
+</div>
+<div id="mydiv">
+  <div id="mydivheader">Student 5</div>
+  
+</div>
+<div id="mydiv">
+  <div id="mydivheader">Student 6</div>
+  
+</div>
+<div id="mydiv">
+  <div id="mydivheader">Student 7</div>
+  
+</div>
+<div id="mydiv">
+  <div id="mydivheader">Student 8</div>
+  
+</div>
+<div id="mydiv">
+  <div id="mydivheader">Student 9</div>
+  
+</div>
+<div id="mydiv">
+  <div id="mydivheader">Student 10</div>
+  
+</div>
+-->
+<script>
+//Make the DIV element draggagle:
+var student_count=3;
+for (var i=1;i<student_count;i++)
+{
+dragElement(document.getElementById("mydiv"+i));
+//dragElement(document.getElementById("mydiv1"));
+}
+dragElement(document.getElementById("board"));
+function dragElement(elmnt) {
+  var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+  if (document.getElementById(elmnt.id + "header")) {
+    /* if present, the header is where you move the DIV from:*/
+    document.getElementById(elmnt.id + "header").onmousedown = dragMouseDown;
+  } else {
+    /* otherwise, move the DIV from anywhere inside the DIV:*/
+    elmnt.onmousedown = dragMouseDown;
+  }
+
+  function dragMouseDown(e) {
+    e = e || window.event;
+    e.preventDefault();
+    // get the mouse cursor position at startup:
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    document.onmouseup = closeDragElement;
+    // call a function whenever the cursor moves:
+    document.onmousemove = elementDrag;
+  }
+
+  function elementDrag(e) {
+    e = e || window.event;
+    e.preventDefault();
+    // calculate the new cursor position:
+    pos1 = pos3 - e.clientX;
+    pos2 = pos4 - e.clientY;
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    // set the element's new position:
+    elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+    elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+  }
+
+  function closeDragElement() {
+    /* stop moving when mouse button is released:*/
+    document.onmouseup = null;
+    document.onmousemove = null;
+  }
+}
+
+function showxy(element)
+{
+var x=element.style.left;
+var y=element.style.top;
+console.log("X="+x);
+console.log("Y="+y);
+
+}
+function save()
+{
+console.log("SAVE");
+var e=document.getElementById("mydiv1");
+showxy(e);
+e=document.getElementById("mydiv2");
+showxy(e);
+}
+
+
+</script>
+
+</body>
+</html>

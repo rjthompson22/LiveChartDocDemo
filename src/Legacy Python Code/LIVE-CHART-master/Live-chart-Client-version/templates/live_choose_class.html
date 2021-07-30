@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html >
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LIVE CHART</title>
+  
+
+
+  
+</head>
+
+
+<body>
+  	
+
+<form action="/chooseClass" method="post">
+    <h2>Choose your class and section</h2>
+    
+    <select id="classid" name="classid"></select>
+     <input hidden type="datetime-local" id="classDateTime"
+       name="classDateTime" value="2018-06-12T19:30" min="2018-01-01 00:00" max="2020-12-14T00:00"></input>
+    <br>
+    <br>
+    <input type="radio" name="version" value="playback">Play Back
+    <input type="radio" name="version" value="live">LIVE version
+    <p>
+	<input type="submit" value="Log In " id="submit">
+	</p>
+    
+    
+	</form>
+
+    
+
+</body>
+
+<script type="text/javascript">  
+    var dropdown = document.getElementById("classid");
+    defaultOption = document.createElement('option');
+    defaultOption.text = 'Choose Class,Section';
+
+    dropdown.add(defaultOption);
+    dropdown.selectedIndex = 0;
+    console.log("Hi");
+   
+    
+    
+    var jso = {{ jsonData|tojson }};
+    console.log(typeof jso);
+    var obj = JSON.parse(jso);
+    console.log(typeof obj);
+    console.log(jso)
+    for (i = 0; i < obj.length; i++) {
+        d = obj[i];
+        console.log(d.class_id);
+        option = document.createElement('option');
+        option.text = obj[i].class_id + " " + obj[i].section;
+        option.value = obj[i].class_id + " " + obj[i].section;
+        console.log(option.text);
+        console.log(option.value);
+      
+        dropdown.options.add(option);
+    }
+    /*
+    for (var i = 0; i < jso.length; i++) {
+      option = document.createElement('option');
+      option.text = jso[i].class_id;
+      option.value = jso[i].class_id;
+      console.log(option.text);
+      console.log(option.value);
+      
+      dropdown.options.add(option);
+    }*/
+  
+      
+</script>
+</html>

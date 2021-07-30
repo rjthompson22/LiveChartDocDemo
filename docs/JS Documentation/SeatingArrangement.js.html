@@ -77,7 +77,7 @@
         "&lt;/div>"+
         "&lt;div class=\"name-editor-container\">"+
 		"&lt;input type=\"text\" id =\"name-input\" class='seating-arrangement-name-input' placeholder='Name of the Seating Arrangement' >"+
-		// "&lt;i class=\"fas fa-trash-alt delete-seating-chart\">&lt;/i>"+
+		"&lt;i class=\"fas fa-trash-alt delete-seating-chart\">&lt;/i>"+
 		//"&lt;i class=\"far fa-trash-alt delete-seating-chart\">&lt;/i>"+
 		//"&lt;button type='button' class=\"btn fas fa-trash-alt fa-2x delete-seating-chart\" style=\"padding: 0px 3px 0px 3px\">&lt;/button>"+
 		"&lt;/div>"+
@@ -106,6 +106,15 @@
     var mainplayerInFocus;
 
     var seatingArrangementAlertDialog = new AlertDialog();
+    /**
+     * @global
+     * @param {*} $container 
+     * @param {*} students_ 
+     * @param {*} callback_ 
+     * @param {*} pauseslider_callback_ 
+     * @param {*} mainplayerInFocus_callback_ 
+     * @returns true
+     */
     this.init = function($container, students_, callback_, pauseslider_callback_, mainplayerInFocus_callback_) {
         $seating_arrangement_container = $container;
         students = students_;
@@ -116,6 +125,11 @@
         return true;
     };
 
+    /**
+     * @global
+     * @param {*} index 
+     * @returns seating arrangement index
+     */
     this.getSeatingArranementJson = function(index = activeSeatingArrangementJsonIndex) {
     	if(index == -1){
     		return seatingArrangementInAlphabeticalOrder();
@@ -124,71 +138,46 @@
     	}
     }
 
+    /**
+     * @global
+     */
     fetchSeatingArrangements = function() {
-        // TODO: Remove
-        // Old ajax implementation; see Fetch below
-        // $.ajax({
-        //     type: "POST",
-        //     data: xref,
-        //     // data: JSON.jsonObject(payload),
-        //     // data: null,
-        //     crossDomain: true,
-        //     contentType: "application/json",
-        //     dataType: "json",
-        //     url: "/LiveChart/getSeatingChart",
-        //     success: function(results) {
-        //         fetchCompleted = true;
-        //         $(".loading-cover").hide(0);
-        //         if (results == "NOT_FOUND_EXCEPTION") {
-        //             drawSeatingArrangementSelector();
-        //         } else {
-        //             seatingArrangementJson = [];
-        //             for (var i = 0; i &lt; results.length; i++) {
-        //                 seatingArrangementJson.push(JSON.parse(results[i]));
-        //             }
-        //             console.log(seatingArrangementJson);
-        //             drawSeatingArrangementSelector();
-        //             // console.log("Time to draw the new shit here");
-        //             // console.log(seatingArrangementJson);
-        //             activeSeatingArrangementJsonIndex = seatingArrangementJson.length - 1;
-        //             $seating_arrangement_container.parent().hide(0);
-        //             $seating_arrangement_container.hide(0);
-        //             callback();
-        //         }
-        //     },
-        //     complete: function() {},
-        //     error: function() {}
-        // });
-        var fetchPreferences = {
-            method: 'POST',
-            credentials: 'include',
-            body: xref
-        };
-
-        fetch("/LiveChart/getSeatingChart", fetchPreferences)
-        .then(response => { return response.json(); })
-        .then(results => {
-            fetchCompleted = true;
-            $(".loading-cover").hide(0);
-            if (results == "NOT_FOUND_EXCEPTION") {
-                drawSeatingArrangementSelector();
-            } else {
-                seatingArrangementJson = [];
-                for (var i = 0; i &lt; results.length; i++) {
-                    seatingArrangementJson.push(JSON.parse(results[i]));
+        $.ajax({
+            type: "POST",
+            data: xref,
+            // data: JSON.jsonObject(payload),
+            // data: null,
+            crossDomain: true,
+            contentType: "application/json",
+            dataType: "json",
+            url: "/LiveChart/getSeatingChart",
+            success: function(results) {
+                fetchCompleted = true;
+                $(".loading-cover").hide(0);
+                if (results == "NOT_FOUND_EXCEPTION") {
+                    drawSeatingArrangementSelector();
+                } else {
+                    seatingArrangementJson = [];
+                    for (var i = 0; i &lt; results.length; i++) {
+                        seatingArrangementJson.push(JSON.parse(results[i]));
+                    }
+                    drawSeatingArrangementSelector();
+                    console.log("Time to draw the new shit here");
+                    console.log(seatingArrangementJson);
+                    activeSeatingArrangementJsonIndex = seatingArrangementJson.length - 1;
+                    $seating_arrangement_container.parent().hide(0);
+                    $seating_arrangement_container.hide(0);
+                    callback();
                 }
-                console.log(seatingArrangementJson);
-                drawSeatingArrangementSelector();
-                // console.log("Time to draw the new shit here");
-                // console.log(seatingArrangementJson);
-                activeSeatingArrangementJsonIndex = seatingArrangementJson.length - 1;
-                $seating_arrangement_container.parent().hide(0);
-                $seating_arrangement_container.hide(0);
-                callback();
-            }
+            },
+            complete: function() {},
+            error: function() {}
         });
     }
 
+    /**
+     * 
+     */
     drawSeatingArrangementSelector = function() {
         $seating_arrangement_container.html(html_for_container);
         showHideSeatingArrangement(true);
@@ -222,6 +211,9 @@
 
     };
 
+    /**
+     * 
+     */
 	seatingArrangementInAlphabeticalOrder = function() {
 		$('#seating-arrangement-toggle').bootstrapToggle('off', true);
 		var totalcolumns = 10;
@@ -236,7 +228,7 @@
 		};
 
 		var studentNamesArray = students.map(student => student.getName()).sort(Intl.Collator().compare);
-		// console.log(studentNamesArray);
+		console.log(studentNamesArray);
 
 		var rowJsonArray = [];
 		var count = 0;
@@ -265,14 +257,17 @@
 			}
 			seatingArrangementAlphabetical.seatingGrid.push({"row": rowJsonArray});
 		}
-		// console.log(seatingArrangementAlphabetical);
+		console.log(seatingArrangementAlphabetical);
 		return seatingArrangementAlphabetical;
 	};
 
+    /**
+     * 
+     */
     populatePreExistingSeatingArrangements = function() {
         if (seatingArrangementJson.length > 0) {
             for (var i = 0; i &lt; seatingArrangementJson.length; i++) {
-            	// console.log(seatingArrangementJson[i]);
+            	console.log(seatingArrangementJson[i]);
                 $(".student-pre-built-list").append("&lt;div class = 'seating-arrangement-name' data-index=" + i + "> " +
                     seatingArrangementJson[i].name +  "&lt;/div>");
             }
@@ -288,17 +283,16 @@
             var seatingArrangement;
             if(activeSeatingArrangementJsonIndex == -1) {
             	seatingArrangement = seatingArrangementInAlphabeticalOrder()
-            	$nameInput.val("Alphabetical Order");
+            	$nameInput.value = "Alphabetical Order";
             } else {
             	seatingArrangement = seatingArrangementJson[activeSeatingArrangementJsonIndex];
-            	$nameInput.val(seatingArrangement.name);
+            	$nameInput.value = seatingArrangement.name;
             }
-            // console.log(seatingArrangement);
+            console.log(seatingArrangement);
 
-            $seatingArrangement.empty();
+            $seatingArrangement.html("");
             rows = seatingArrangement.totalrows;
             columns_per_row = seatingArrangement.totalcolumns;
-            $nameInput.val(seatingArrangement.name)
 
             $(".student-list").html("&lt;div class='student-name teacher-desk'> &lt;p>TEACHER DESK&lt;/p> &lt;i class=\"fas fa-grip-vertical draggable-icon\">&lt;/i>&lt;/div>");
 
@@ -331,6 +325,9 @@
         });
     };
 
+    /**
+     * 
+     */
     setSeatingCellsHeightWidth = function() {
         $seatingCells = $(".seating-cell");
         $seatingCells.css({
@@ -349,12 +346,18 @@
 
     };
 
+    /**
+     * 
+     */
     generateDragDropPrimaryCtrl = function() {
         makeDraggable($(".student-name"));
         makeDraggable($(".hasStudent"));
         makeDroppable($(".seating-cell"), ".student-name, .hasStudent");
     };
 
+    /**
+     * 
+     */
     makeDraggable = function($make_draggable) {
         $make_draggable.draggable({
             containment: "body",
@@ -379,11 +382,14 @@
             },
             drag: function() {
                 $(this).css("z-index", "1000");
-                // console.log($(this).css("z-index"));
+                console.log($(this).css("z-index"));
             }
         });
     };
 
+    /**
+     * 
+     */
     makeDroppable = function($make_droppable, accepts) {
         $make_droppable.droppable({
             accept: accepts,
@@ -398,9 +404,12 @@
 
     };
 
+    /**
+     * 
+     */
     handleDrop = function(event, ui, $droppedOn) {
     	$(".drag-drop-instruction").hide();
-        // console.log(event);
+        console.log(event);
         var $dropped = $(ui.draggable);
         if ($dropped.hasClass("seating-cell")) {
             var droppedOnHtml = $droppedOn.html();
@@ -441,7 +450,7 @@
     };
 
     setControlClickListeners = function() {
-    	$nameInput = $("#name-input");
+    	$nameInput = document.getElementById("name-input");
         $resetSeatingChart = $(".reset-seating-chart");
         $addRow = $(".add-row");
         $removeRow = $(".remove-row");
@@ -449,12 +458,12 @@
         $removeColumn = $(".remove-column");
         $saveSeatingChart = $(".save-seating-chart");
         $cancelSeatingChart = $(".cancel-seating-chart");
-        // $deleteArrangement = $(".delete-seating-chart");
+        $deleteArrangement = $(".delete-seating-chart");
 
-        // $nameInput.val("Testing Arrangement " + (activeSeatingArrangementJsonIndex + 1));
+        // $nameInput.value = "Testing Arrangement " + (activeSeatingArrangementJsonIndex + 1);
 
         $resetSeatingChart.unbind('click').click(function() {
-            // console.log("resetSeatingChart click triggered this will reset the seating arrangement.");
+            console.log("resetSeatingChart click triggered this will reset the seating arrangement.");
             //check all students have been given a position
             drawSeatingArrangementSelector();
             $(".drag-drop-instruction").show();
@@ -505,7 +514,7 @@
             }
         });
 
-        /* $deleteArrangement.unbind('click').click(function() {
+        $deleteArrangement.unbind('click').click(function() {
         	if(activeSeatingArrangementJsonIndex === -1) {
         		alert("You cannot delete alphabetical order.");
         	} else {
@@ -513,9 +522,9 @@
 	        	mainplayerInFocus(true);
 	        	makeAPICall(3, { "dbID": dbID });
         	}
-        });*/
+        });
 
-        /*$deleteArrangement.unbind('click').click(function() {
+        $deleteArrangement.unbind('click').click(function() {
         	if(activeSeatingArrangementJsonIndex === -1) {
         		seatingArrangementAlertDialog.init("A1", "You cannot delete alphabetical order.");
         	} else {
@@ -523,17 +532,16 @@
 	        	mainplayerInFocus(true);
 	        	makeAPICall(3, { "dbID": dbID });
         	}
-        });*/
+        });
 
         $saveSeatingChart.unbind('click').click(function() {
-            // console.log("saveSeatingChart click triggered this will have an ajax api call for saving seating arrangement.");
+            console.log("saveSeatingChart click triggered this will have an ajax api call for saving seating arrangement.");
             //check all students have been given a position
             if ($(".student-list > .student-name").length == 1) {
                 clearEmptyRowsAndColumns();
                 var jsonObject = extractSeatingChartJson();
                 if (jsonObject.seatingGrid.length != 0) {
                     makeAPICall(1, { "groupXRef": xref, "seatingArrangement": JSON.stringify(jsonObject) });
-                    console.log(jsonObject);
                 } else if (jsonObject.seatingGrid.length != 0) {
                     seatingArrangementAlertDialog.init("A1", "There is nothing to save.");
                 }
@@ -628,10 +636,10 @@
 
         if(activeSeatingArrangementJsonIndex === -1) {
         	name = "Alphabetical Order";
-        } else if($nameInput.val() === "") {
-        	name = "Custom Arrangement: " + (activeSeatingArrangementJsonIndex + 1);
+        } else if($nameInput.value === "") {
+        	name = "Testing Arrangement: " + (activeSeatingArrangementJsonIndex + 1);
         } else {
-        	name = $nameInput.val();
+        	name = $nameInput.value;
         }
 
         var jsonObject = {
@@ -656,10 +664,10 @@
                     "column": j.toString()
                 });
             }
-            // console.log(rowJsonArray);
+            console.log(rowJsonArray);
             jsonObject.seatingGrid.push({ "row": rowJsonArray });
         }
-        // console.log(JSON.stringify(jsonObject, null, 2));
+        console.log(JSON.stringify(jsonObject, null, 2));
         return jsonObject;
     };
 
@@ -697,7 +705,6 @@
                     break;
             }
 
-            // TODO: Change
             $.ajax({
                 type: "POST",
                 data: JSON.stringify(payload),
@@ -708,7 +715,7 @@
                 dataType: "json",
                 url: url,
                 success: function(result) {
-                    // console.log(result);
+                    console.log(result);
                     newLayoutFlag = false;
                     //$(".seating-arrangement-name").last().trigger("click");
                 },
@@ -753,13 +760,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#generateAffectiveStatesFromTime">generateAffectiveStatesFromTime</a></li><li><a href="global.html#getTimeSpent">getTimeSpent</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#updateUserReport">updateUserReport</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#blockedActions">blockedActions</a></li><li><a href="global.html#computeActionLogSequence">computeActionLogSequence</a></li><li><a href="global.html#dialog_root">dialog_root</a></li><li><a href="global.html#fetchSeatingArrangements">fetchSeatingArrangements</a></li><li><a href="global.html#generateAffectiveStatesFromTime">generateAffectiveStatesFromTime</a></li><li><a href="global.html#getSeatingArranementJson">getSeatingArranementJson</a></li><li><a href="global.html#getTimeSpent">getTimeSpent</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#monthNames">monthNames</a></li><li><a href="global.html#showDialogA1">showDialogA1</a></li><li><a href="global.html#showQuestionDetail">showQuestionDetail</a></li><li><a href="global.html#Student">Student</a></li><li><a href="global.html#updateUserReport">updateUserReport</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Fri Jul 30 2021 02:53:21 GMT-0400 (Eastern Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Fri Jul 30 2021 08:28:21 GMT-0400 (Eastern Daylight Time)
 </footer>
 
 <script> prettyPrint(); </script>

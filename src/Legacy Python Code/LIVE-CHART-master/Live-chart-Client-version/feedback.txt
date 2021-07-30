@@ -1,0 +1,6 @@
+Idle time limit
+Maroon to Red 
+Problem Statistics table(Difficulty,correctness)
+Current time from the class
+History
+Being able to record actions from teacher

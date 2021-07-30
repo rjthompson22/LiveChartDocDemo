@@ -1,0 +1,168 @@
+/**
+*	media queries for responsive behavior
+*   start
+*/
+
+/* On screens that are 1380px or less, set the background color to blue */
+@media screen and (max-width: 1380px) {
+	.root-container {
+		font-size: 0.7rem;
+	}
+	/* .student-img, .teacher-img {
+		display: none;
+	} */
+	.student-info, .empty-space, .teacher-space {
+		padding: 3px;
+	}
+	.student-name-info, .teacher-name-info {
+		font-size: 0.7rem;
+		text-align: left;
+	}
+	.student-info-description {
+		font-size: 0.58rem;
+	}
+	.check, .cross {
+		font-size: 0.85rem;
+	}
+	.progress {
+		height: 0.35rem !important;
+	}
+	.info-red-zone-title, .info-gold-zone-title, .info-block-general-title {
+		font-size: 1rem;
+	}
+	.regular-txt1 {
+		font-size: .68rem;
+	}
+	/* .assistmentsLogo {
+		display: none;
+	}
+	.assistmentsLogo2 {
+		display: block;
+	} */
+	.absence-complete-indicator {
+		line-height: 2.4rem;
+		font-size: 0.73rem;
+	}
+	.seating-arrangement-grid-controllers .btn {
+		font-size: 0.8rem;
+	}
+	.seating-arrangement-controller *  {
+		font-size: 0.9rem;
+	}
+	.seating-title, .student-list-title, .student-list-container>.seating-title {
+		font-size: 1.2rem;
+	}
+	.drag-drop-instruction {
+		font-size: 1rem;
+	}
+	.student-name {
+		font-size: 0.73rem;
+	}
+	.info-block-general {
+		padding: 6px 9px;
+	}
+	.supp-info {
+		margin-right: 8px;
+	}
+	.regular-txt4 {
+		font-size: 1.2rem;
+	}
+	.regular-txt2{
+		font-size: 0.8rem;
+	}
+	.seating-arrangement-toggle-container .btn {
+		font-size: 0.72rem !important;
+	}
+	.seating-arrangement .toggle {
+		min-width: 9rem !important;
+	}
+	.toggle.btn {
+		min-height: unset!important;
+	}
+	.absence-complete-indicator {
+		top: 32.5%;
+	)
+}
+
+/* On screens that are 980px or less, set the background color to blue */
+@media screen and (max-width: 980px) {
+	.root-container {
+		font-size: 0.68rem;
+	}
+	.student-img, .teacher-img {
+		display: none;
+	}
+	.student-info, .empty-space, .teacher-space {
+		padding: 3px;
+	}
+	.student-name-info, .teacher-name-info {
+		font-size: 0.62rem;
+		text-align: left;
+	}
+	.student-info-description {
+		font-size: 0.52rem;
+	}
+	.check, .cross {
+		font-size: 0.7rem;
+	}
+	.progress {
+		height: 0.3rem !important;
+	}
+	.regular-txt1 {
+		font-size: .6rem;
+	}
+	/* .assistmentsLogo {
+		display: none;
+	}
+	.assistmentsLogo2 {
+		display: block;
+	} */
+	.absence-complete-indicator {
+		line-height: 1.72rem;
+		font-size: 0.58rem;
+	}
+	.seating-arrangement-grid-controllers .btn {
+		font-size: 0.65rem;
+	}
+	.seating-arrangement-controller * {
+		font-size: 0.7rem;
+	}
+	.seating-title, .student-list-title, .student-list-container>.seating-title {
+		font-size: 1rem;
+	}
+	.drag-drop-instruction {
+		font-size: 0.8rem;
+	}
+	.student-name {
+		font-size: 0.65rem;
+	}
+	.info-block-general {
+		padding: 3px 6px;
+	}
+	.supp-info {
+		margin-right: 5px;
+	}
+	.regular-txt4 {
+		font-size: 1rem;
+	}
+	.regular-txt2{
+		font-size: 0.75rem;
+	}
+	.seating-arrangement-toggle-container .btn {
+		font-size: 0.67rem !important;
+	}
+	.seating-arrangement .toggle {
+		min-width: 9.5rem !important;
+	}
+	.toggle.btn {
+		min-height: unset!important;
+	}
+	.absence-complete-indicator {
+		top: 30%;
+	)
+}
+
+/**
+*	media queries for responsive behavior
+*   end
+*/

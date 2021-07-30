@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html >
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LIVE CHART</title>
+  
+  
+  
+      
+
+  
+</head>
+
+
+<body>
+  	
+
+<form action="/login" method="post">
+    <h2>LIVE-CHART</h2>
+  <h3>Log In</h3>
+        <p>
+			<label for="USER ID" class="floatLabel">USER ID</label>
+			<input id="userid" name="userid" type="number">
+		</p>
+		
+		<p>
+			<input type="submit" value="Log In" id="submit">
+		</p>
+
+
+    {% if message %}
+    <h3>{{ message }}</h3>
+    {% endif %}
+
+	</form>
+
+
+
+</body>
+</html>

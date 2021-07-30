@@ -1,0 +1,6 @@
+secret_key = t1muymr88CEIZUK6p7AJ9sf1DJ7DNt1t
+db_name = assistment_production
+username = postgres
+password = RuePierre1503
+host = as14-r4q3.cs.wpi.edu
+port = 5433

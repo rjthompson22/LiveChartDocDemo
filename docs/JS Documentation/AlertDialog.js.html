@@ -28,6 +28,9 @@
         <article>
             <pre class="prettyprint source linenums"><code>function AlertDialog() {
 
+  /**
+   * @global
+   */
   var dialog_root = "&lt;div class='alert-dialog-root'>" +
     "&lt;div class='alert-dialog-header'>" +
     "&lt;/div>" +
@@ -74,7 +77,9 @@
     $alert_dialog_container.show(0);
   }
 
-
+  /**
+   * @global
+   */
   showDialogA1 = function(message, callback) {
     $alert_dialog_header = $(".alert-dialog-header");
     $alert_dialog_body = $(".alert-dialog-body");
@@ -92,51 +97,55 @@
       }
     });
 
-    $("#alert-dialog-cancel-btn").click(function() {
+    $("#alert-dialog-cancel-btn").click(function(){
       $alert_dialog_container.hide(0);
     });
   }
 
-  showQuestionDetail = function(question) {
-    $(".alert-dialog-root").addClass("alert-dialog-root3");
+  /**
+   * @global
+   */
+  showQuestionDetail = function(question){
+    $(".alert-dialog-root").addClass("alert-dialog-root2");
     $alert_dialog_header = $(".alert-dialog-header");
     $alert_dialog_body = $(".alert-dialog-body");
     $alert_dialog_footer = $(".alert-dialog-footer");
 
     $alert_dialog_header.html("Problem Details:");
-    var bodyHtml = "&lt;div style='margin-left:1rem;'>" +
-      "&lt;div class=\"problem-body\">" + question.problemText + "&lt;/div>" +
-      "&lt;hr>" +
-      "&lt;p> Problem Type: &lt;b>&lt;em>" + question.problemType + "&lt;/em>&lt;/b> &lt;/p>" +
-      "&lt;p class='answer-text'> Answer: " + question.answerText + " &lt;/p>&lt;hr>" +
-      //"&lt;p class='problem-body'>"+question.problemText+"&lt;/p>"+
-      //"&lt;p class='answer-text'> Answer: "+question.answerText+"&lt;/p>"+
-      //"&lt;p>First common wrong answer: &lt;b>Less than 1&lt;/b>&lt;/p>"+
-      //"&lt;p>Overall Class info: &lt;b>4/6 (67%)&lt;/b>&lt;/p>"+
-      //"&lt;p>First CWA Feedback: &lt;br>nbsp;nbsp;nbsp;Good job noticing that they're not the same size. What would you need to multiply each side in P by to get the corresponding side in Q?&lt;/p>"+
-      //"&lt;p>Instructional Recommendation for 1st CWA: N/A&lt;/p>&lt;hr>"+
-      //"&lt;p>Second common wrong answer: &lt;b>Equal to 1&lt;/b> &lt;/p>"+
-      //"&lt;p>Overall Class info:  &lt;b>2/6 (33%)&lt;/b>&lt;/p>"+
-      //"&lt;p>Second CWA Feedback: &lt;br>nbsp;nbsp;nbsp;Remember that multiplying by a scale factor of 1 results in an exact copy. What would you need to multiply each side in P by to get the corresponding side in Q?&lt;/p>"+
-      //"&lt;p>Instructional Recommendation for 2nd CWA: N/A&lt;/p>&lt;hr>"+
-      //"&lt;p>Third common wrong answer: N/A&lt;/p>"+
-      //"&lt;p>Overall Class info:  N/A&lt;/p>"+
-      //"&lt;p>Third CWA Feedback: &lt;br>N/A&lt;/p>"+
-      //"&lt;p>Instructional Recommendation for 3rd CWA: N/A &lt;/p>&lt;hr>"+
-      //"&lt;hr>"+
-      //"&lt;p>Instructional Recommendation for Problem: &lt;br>&lt;b>Students are struggling with the lack of side lengths in these figures or the order in which they appear. Revisit the blackline master from"+
-      //" lesson 5 activity 2 2 issues? - lack of numbers and ordering &lt;br>act 5.2 BLMs &amp; tracing paper to go from original to copy&lt;/b>&lt;/p>"+
-      "&lt;div>";
+    var bodyHtml="&lt;div style='margin-left:1rem;'>Problem Type: "+question.problemType+" &lt;/p>&lt;hr>"+ 
+    	  "&lt;div class=\"problem-body\">"+question.problemText+"&lt;/div>"+
+    	  "&lt;hr>"+
+          "&lt;p class='answer-text'> Answer: Greater than 1&lt;/p>&lt;hr>"+
+          //"&lt;p class='problem-body'>"+question.problemText+"&lt;/p>"+
+          //"&lt;p class='answer-text'> Answer: "+question.answerText+"&lt;/p>"+
+          "&lt;p>First common wrong answer: &lt;b>Less than 1&lt;/b>&lt;/p>"+
+          "&lt;p>Overall Class info: &lt;b>4/6 (67%)&lt;/b>&lt;/p>"+
+          "&lt;p>First CWA Feedback: &lt;br>nbsp;nbsp;nbsp;Good job noticing that they're not the same size. What would you need to multiply each side in P by to get the corresponding side in Q?&lt;/p>"+
+          "&lt;p>Instructional Recommendation for 1st CWA: N/A&lt;/p>&lt;hr>"+
+          "&lt;p>Second common wrong answer: &lt;b>Equal to 1&lt;/b> &lt;/p>"+
+          "&lt;p>Overall Class info:  &lt;b>2/6 (33%)&lt;/b>&lt;/p>"+
+          "&lt;p>Second CWA Feedback: &lt;br>nbsp;nbsp;nbsp;Remember that multiplying by a scale factor of 1 results in an exact copy. What would you need to multiply each side in P by to get the corresponding side in Q?&lt;/p>"+
+          "&lt;p>Instructional Recommendation for 2nd CWA: N/A&lt;/p>&lt;hr>"+
+          "&lt;p>Third common wrong answer: N/A&lt;/p>"+
+          "&lt;p>Overall Class info:  N/A&lt;/p>"+
+          "&lt;p>Third CWA Feedback: &lt;br>N/A&lt;/p>"+
+          "&lt;p>Instructional Recommendation for 3rd CWA: N/A &lt;/p>&lt;hr>"+
+          "&lt;hr>"+
+          "&lt;p>Instructional Recommendation for Problem: &lt;br>&lt;b>Students are struggling with the lack of side lengths in these figures or the order in which they appear. Revisit the blackline master from"+
+          " lesson 5 activity 2 2 issues? - lack of numbers and ordering &lt;br>act 5.2 BLMs &amp; tracing paper to go from original to copy&lt;/b>&lt;/p>&lt;div>";
 
     $alert_dialog_body.html(bodyHtml);
     $alert_dialog_footer.html(dialogA1_footer_content1);
 
-    $("#alert-dialog-okay-btn").unbind('click').click(function() {
+    /**
+     * @global
+     */
+    $("#alert-dialog-okay-btn").click(function() {
       $alert_dialog_container.hide(0);
       // $(this).unbind('click');
-      // if (callback != null) {
-      //   callback();
-      // }
+      if (callback != null) {
+        callback();
+      }
     });
   }
 }
@@ -150,13 +159,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#generateAffectiveStatesFromTime">generateAffectiveStatesFromTime</a></li><li><a href="global.html#getTimeSpent">getTimeSpent</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#updateUserReport">updateUserReport</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#blockedActions">blockedActions</a></li><li><a href="global.html#computeActionLogSequence">computeActionLogSequence</a></li><li><a href="global.html#dialog_root">dialog_root</a></li><li><a href="global.html#fetchSeatingArrangements">fetchSeatingArrangements</a></li><li><a href="global.html#generateAffectiveStatesFromTime">generateAffectiveStatesFromTime</a></li><li><a href="global.html#getSeatingArranementJson">getSeatingArranementJson</a></li><li><a href="global.html#getTimeSpent">getTimeSpent</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#monthNames">monthNames</a></li><li><a href="global.html#showDialogA1">showDialogA1</a></li><li><a href="global.html#showQuestionDetail">showQuestionDetail</a></li><li><a href="global.html#Student">Student</a></li><li><a href="global.html#updateUserReport">updateUserReport</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Fri Jul 30 2021 02:53:21 GMT-0400 (Eastern Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Fri Jul 30 2021 08:28:21 GMT-0400 (Eastern Daylight Time)
 </footer>
 
 <script> prettyPrint(); </script>

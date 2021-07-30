@@ -1,0 +1,6 @@
+secret_key = t1muymr88CEIZUK6p7AJ9sf1DJ7DNt1t
+db_name = postgres
+username = admin
+password = postgres
+host = botelho.ddns.net
+port = 5434

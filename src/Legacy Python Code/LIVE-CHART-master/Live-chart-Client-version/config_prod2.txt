@@ -1,0 +1,6 @@
+secret_key = t1muymr88CEIZUK6p7AJ9sf1DJ7DNt1t
+db_name = cas_core
+username = postgres
+password = RuePierre0809
+host = dev.tng.cs.wpi.edu
+port = 5432

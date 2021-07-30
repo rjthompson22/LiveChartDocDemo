@@ -1,0 +1,64 @@
+.colorblind-green .info-red-zone .student-info {
+	background-color: #A17724;
+	background-color: #FD7E14;
+	color: #333;
+}
+
+.colorblind-green .info-gold-zone .student-info {
+	background-color: #85C0F9ee;
+}
+
+.colorblind-green .info-block-general .red-marked {
+	border: 1px solid #A17724 !important;
+	background-color: #A17724BB;
+	background-color: #FD7E14CC;
+}
+
+.colorblind-green .info-block-general .gold-marked {
+	border: 1px solid #3C84C9 !important;
+	background-color: #85C0F9DD;
+}
+
+.colorblind-green .incorrect{
+	color: #FD7E14;
+	font-family: poppin-medium;
+}
+
+.colorblind-green .cross {
+	color: #61450F;
+}
+
+.colorblind-green .correct{
+	color: #85C0F9;
+    color: #4695E0;
+	font-family: poppin-medium;
+}
+
+.colorblind-green .check {
+	color: #094782;
+}
+
+.colorblind-green .red-marked * {
+	color: unset;
+}
+
+.colorblind-green #placeholder-gold {
+	color: #3C84C9;
+	border: 1px solid #3C84C9;
+}
+
+.colorblind-green #placeholder-red {
+	color: #A17724;
+	border: 1px solid #A17724;	
+	border: 1px solid #857046;
+    color: #857046;
+}
+
+.colorblind-green .student-red-zone {
+	background-color: #FD7E14;
+    color: #333;
+}
+
+.colorblind-green .student-green-zone {
+	background-color: #85C0F9ee;
+}

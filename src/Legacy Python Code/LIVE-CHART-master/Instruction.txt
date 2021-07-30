@@ -1,0 +1,40 @@
+To start the project:
+#python start.py
+
+
+To test run: 
+User ID: 74237 (Mrs.RR)
+Class ID: 54176 118275
+
+
+
+Drag drop students and save layout.
+
+
+Next time : 
+Use same User ID, Class ID to login.
+
+Now enter date,time.
+
+
+Date: 04/10/2019 ( 10th April)
+
+Time : 09:45 AM
+
+
+Click on Start logging:
+Use web console to check debug statements.
+
+
+
+TO DOs:
+
+1.Make the changes for client side in :
+  seating_chart_with_names_live.html ( Live version ) #Copy Paste work
+  
+Changes already done in seating_chart_with_names.html ( Playback version )
+  
+
+2.Speed button functionality in Client side version of the code.
+
+

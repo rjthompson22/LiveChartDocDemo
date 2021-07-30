@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html >
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+
+  <title>ObserveME</title>
+  
+  
+  
+      <link rel="stylesheet" href="{{ url_for('static', filename='css/session.css')}}">
+      
+
+{#    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />#}
+{#    <meta http-equiv="Pragma" content="no-cache" />#}
+{#    <meta http-equiv="Expires" content="0" />#}
+{##}
+{#    <script type=text/javascript src="{{ url_for('static', filename='jquery.js') }}"></script>#}
+    <script  src="{{ url_for('static', filename='js/session.js')}}"></script>
+</head>
+
+<body>
+        
+        
+        
+        <div id="sync_form3">
+            <form action="/start_sync_call" method="get">
+                <p>
+                    <h3>Other coders not ready : Text: {{ args.action }}</h3>
+                    <input type="submit" value="Check & Start syncing" id="submit">
+                </p>
+            </form>
+        </div>
+        
+        </div> 
+        <div id="sync_form2">
+            <form action="/check_if_sync_start" method="get">
+                <p>
+                    <h3>Everyone is ready</h3>
+                    <input type="submit" value="Start sync" id="submit">
+                </p> 
+            </form>
+        </div> 
+        
+        <div id="find_student">
+            <form action="/start_sync_call" method="get" id="sync">
+                <h2>ObserveME</h2>
+                <h3>Class Code: {{ args.class_id }}</h3>
+                <h3>Student {{ args.student_id }}</h3>
+
+
+                <p>
+                    <label for="student_name" class="floatLabel">Student Name</label>
+                    <input id="student_name" name="student_name" value={{ args.student_id }} type="text">
+                </p>
+                <p>
+
+                    <h3 id="find_st">Find Student {{ args.student_id }}...5</h3>
+
+                    <label>
+                    <input id="class_code" name="class_code" value={{ args.class_id }} type="hidden" >
+                    </label>
+                    <label>
+                    <input id="sync_action" name="action" value='' type="hidden" >
+                    </label>
+                    <label>
+                    <input id="student_id" name="student_id" value={{ args.student_id }} type="hidden" >
+                    </label>
+                </p>
+            </form>
+        </div>
+        
+        <div>
+            <form action="/dashboard" method="get">
+                <p>
+                    <input type="submit" value="Home" id="submit">
+                </p>
+            </form>
+        </div>
+        
+        
+
+
+    <script type="text/javascript">
+    
+        console.log("In java script");
+		
+        if ( {{ args.action }} === 12) {
+        
+            
+            document.getElementById("sync_form2").style.display = "block";
+            document.getElementById("sync_form3").style.display = "none";
+            console.log("Hi from new session2, all users ready");
+            
+
+           
+        }
+        
+        else if ( {{ args.action }} === 13) {
+            console.log("In action=13");
+            document.getElementById("sync_form2").style.display = "none";
+            document.getElementById("sync_form3").style.display = "block";
+            console.log("Hi from new session2, all users not ready");
+        }
+        
+           
+           
+        
+        else if ( {{ args.action }} === 14) {
+            console.log("In action=14");
+            document.getElementById("sync_form2").style.display = "none";
+            document.getElementById("sync_form3").style.display = "none";
+                
+            console.log("DB Updated succesfully");
+            
+          
+            
+
+           
+        }
+        else if ( {{ args.action }} === 15) {
+            console.log("In action=15");
+            
+            document.getElementById("sync_form2").style.display = "none";
+            document.getElementById("sync_form3").style.display = "none";
+            console.log("DB Update failed");
+           
+        }
+        
+        
+        else {
+            document.getElementById("coding_form").style.display = "none";
+            document.getElementById("timer_form").style.display = "none";
+            document.getElementById("sync_form").style.display = "none";
+            document.getElementById("find_student").style.display = "none";
+            document.getElementById("pre_coding_form").style.display = "none";
+            console.log("ELSE CASE BYE BYE");
+        }
+
+        
+        
+    </script>
+
+</body>
+</html>

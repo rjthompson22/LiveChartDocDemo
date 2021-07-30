@@ -1,0 +1,24 @@
+{
+    "plugins": [],
+    "recurseDepth": 10,
+    "source": {
+        "include": ["./WebContent"],
+        "includePattern": ".js$",
+        "excludePattern": "(^|\\/|\\\\)_"
+    },
+    "sourceType": "module",
+    "tags": {
+        "allowUnknownTags": true,
+        "dictionaries": ["jsdoc","closure"]
+    },
+    "templates": {
+        "cleverLinks": true,
+        "monospaceLinks": true
+    },
+    "opts": {            
+        "destination": "./docs/JS Documentation",          
+        "recurse": true,
+        "tutorials": "./docs/JS Documentation/tutorials", 
+        "readme": "./readme.md"             
+    }
+}
